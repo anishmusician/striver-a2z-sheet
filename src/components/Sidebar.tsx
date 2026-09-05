@@ -1,5 +1,5 @@
 import React from 'react';
-import { House, FileText, Code2, Download, Upload, RotateCcw, Flame } from 'lucide-react';
+import { House, FileText, Code2, Download, Upload, RotateCcw, Flame, LogOut } from 'lucide-react';
 import type { UserProfile } from '../types/dsa';
 
 interface SidebarProps {
@@ -9,6 +9,7 @@ interface SidebarProps {
   onImportClick: () => void;
   onReset: () => void;
   onOpenAuth?: () => void;
+  onLogout?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -18,6 +19,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onImportClick,
   onReset,
   onOpenAuth,
+  onLogout,
 }) => {
   return (
     <aside className="hidden lg:flex flex-col justify-between w-[74px] h-screen sticky top-0 bg-[#0e0e0f] border-r border-[var(--border)] py-3 px-2 z-30 shrink-0 select-none">
@@ -126,6 +128,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           {currentProfile?.name?.charAt(0).toUpperCase() || 'A'}
         </button>
+
+        {/* Logout button */}
+        {onLogout && (
+          <button
+            onClick={onLogout}
+            className="p-1.5 rounded-xl text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer mt-0.5"
+            title="Log Out of Dedicated Session"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </aside>
   );

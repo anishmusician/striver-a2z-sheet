@@ -59,10 +59,23 @@ A modern, high-performance, and paywall-free 1:1 clone of **Striver's A2Z DSA Sh
 - **Revision Star**: One-click star problems to revise before interviews.
 - **Random Problem Picker**: Shuffle button for daily mock practice.
 
-### 5. **100% Client-Side, Offline & Private**
+### 5. **🔒 Dedicated Access Gate & Username/Password Security**
+- **Restricted Access**: Random visitors on the internet cannot access the sheet without logging in.
+- **Username & Password Authentication**:
+  - Powered by cryptographic SHA-256 password salting.
+  - **Default Account**: Username: `anish` • Password: `anish123` (or click "Quick Sign-In as Anish").
+- **Private Invite Passcode Gate**:
+  - To register a new dedicated account (for yourself or your friend), a secret invite passcode is required:
+    - **Valid Invite Passcodes**: `STRIKER-DSA-2026`, `ANISH-DSA`, `TUF-2026`
+  - Prevents random visitors on Vercel from signing up.
+- **Zero Server Outages & Complete Privacy**:
+  - Runs in a secure client-side vault with zero external database dependencies that could crash.
+- **Log Out Anytime**: One-click log out from the header or sidebar to lock the session.
+
+### 6. **100% Client-Side, Offline & Portable**
 - **Export Progress**: Download a complete JSON backup of all your solved problems, code, and notes with 1 click.
 - **Import Progress**: Restore your progress anytime on any machine or browser.
-- No login, no telemetry, complete data ownership.
+- **Learn with Friends**: Share sync codes to compare solved problems and study streaks.
 
 ---
 

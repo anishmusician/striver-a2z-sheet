@@ -9,6 +9,9 @@ import { StepAccordion } from './components/StepAccordion';
 import { ProblemWorkspace } from './components/ProblemWorkspace';
 import { VideoModal } from './components/VideoModal';
 import { AuthModal } from './components/AuthModal';
+import { LoginPage } from './components/LoginPage';
+import { authService, type AuthUser } from './services/authService';
+import { LogOut } from 'lucide-react';
 
 const sheetData = sheetDataRaw as SheetData;
 
@@ -49,12 +52,36 @@ export function App() {
   const [selectedStatus, setSelectedStatus] = useState<'all' | ProblemStatus>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | Difficulty>('all');
 
+  // Dedicated user authentication
+  const [authUser, setAuthUser] = useState<AuthUser | null>(() => authService.getCurrentUser());
+
   // Modal states
   const [activeProblem, setActiveProblem] = useState<Problem | null>(null);
   const [activeVideo, setActiveVideo] = useState<{ url: string; title: string } | null>(null);
   const [showKnowMore, setShowKnowMore] = useState<boolean>(false);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Sync authUser with active profile
+  useEffect(() => {
+    if (authUser) {
+      const match = profiles.find(p => p.username === authUser.username);
+      if (match) {
+        if (currentProfile.id !== match.id) {
+          switchProfile(match.id);
+        }
+      } else {
+        createProfile(authUser.name, authUser.username, authUser.avatarColor);
+      }
+    }
+  }, [authUser, profiles, currentProfile.id, switchProfile, createProfile]);
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to log out of your session?')) {
+      authService.logout();
+      setAuthUser(null);
+    }
+  };
 
   // Flat list of all problems for consecutive navigation
   const allProblemsList: Problem[] = useMemo(() => {
@@ -251,6 +278,11 @@ export function App() {
     showToast(`Picked: "${chosen.title}" (${chosen.difficulty})`);
   };
 
+  // Guard unauthenticated visitors: Must login with username & password
+  if (!authUser) {
+    return <LoginPage onLoginSuccess={user => setAuthUser(user)} />;
+  }
+
   return (
     <div className="flex min-h-screen bg-[var(--background)] text-white font-firaSans">
       {/* Hidden File Input for JSON import */}
@@ -277,6 +309,7 @@ export function App() {
         onImportClick={() => fileInputRef.current?.click()}
         onReset={resetProgress}
         onOpenAuth={() => setShowAuthModal(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main Page Area */}
@@ -305,6 +338,16 @@ export function App() {
                     <span className="text-[10px] font-medium text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/20 hidden md:inline">
                       Learn Together
                     </span>
+                  </button>
+
+                  {/* Log Out Button */}
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-rose-500/10 hover:border-rose-500/30 text-xs text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer shadow-sm"
+                    title="Log Out of Dedicated Session"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Log Out</span>
                   </button>
 
                   <span className="hidden md:inline-flex shrink-0 items-center rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] px-3 py-1.5 text-xs text-[var(--base-text-muted)] shadow-sm">
