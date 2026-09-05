@@ -44,7 +44,7 @@ export interface SubmissionRecord {
   problemId: string;
   timestamp: number;
   language: Language;
-  status: 'Accepted' | 'Wrong Answer' | 'Runtime Error';
+  status: 'Accepted' | 'Wrong Answer' | 'Runtime Error' | 'Compile Error';
   runtimeMs: number;
   code: string;
   passedCount?: number;

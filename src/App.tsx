@@ -446,7 +446,7 @@ export function App() {
           status={getStatus(activeProblem.id)}
           isStarred={isStarred(activeProblem.id)}
           notes={getNotes(activeProblem.id)}
-          savedCode={getSavedCode(activeProblem.id, 'python')}
+          getSavedCode={lang => getSavedCode(activeProblem.id, lang)}
           submissions={getSubmissions(activeProblem.id)}
           onClose={() => setActiveProblem(null)}
           onNavigateProblem={prob => setActiveProblem(prob)}
