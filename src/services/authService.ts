@@ -36,6 +36,8 @@ function generateSalt(): string {
   return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+import { idbSet, idbGet } from './storageService';
+
 function getStoredUsers(): Record<string, StoredUserRecord> {
   try {
     const raw = localStorage.getItem(USERS_STORAGE_KEY);
@@ -51,28 +53,62 @@ function getStoredUsers(): Record<string, StoredUserRecord> {
 function saveStoredUsers(users: Record<string, StoredUserRecord>): void {
   try {
     localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+    // Asynchronous dual-write to IndexedDB for permanent protection
+    idbSet(USERS_STORAGE_KEY, users).catch(() => {});
   } catch (e) {
     console.error('Failed to save stored users', e);
   }
 }
 
 export const authService = {
-  // Initialize default admin account if no users exist
+  // Initialize default dedicated accounts for Anish and Tanisha
   async initDefaultAccounts(): Promise<void> {
-    const users = getStoredUsers();
+    let users = getStoredUsers();
+
+    // If localStorage was cleared, attempt recovery from IndexedDB
     if (Object.keys(users).length === 0) {
+      const idbUsers = await idbGet<Record<string, StoredUserRecord>>(USERS_STORAGE_KEY);
+      if (idbUsers && Object.keys(idbUsers).length > 0) {
+        users = idbUsers;
+        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+      }
+    }
+
+    let modified = false;
+
+    // Account 1: Anish
+    if (!users['anish']) {
       const salt = generateSalt();
       const hash = await hashPassword('anish123', salt);
-      const defaultUser: StoredUserRecord = {
+      users['anish'] = {
         id: 'usr_anish',
         username: 'anish',
-        name: 'Anish Kumar',
+        name: 'Anish',
         avatarColor: 'from-orange-500 to-amber-500',
         passwordHash: hash,
         salt,
-        createdAt: Date.now(),
+        createdAt: 1700000000000,
       };
-      users['anish'] = defaultUser;
+      modified = true;
+    }
+
+    // Account 2: Tanisha
+    if (!users['tanisha']) {
+      const salt = generateSalt();
+      const hash = await hashPassword('tanisha123', salt);
+      users['tanisha'] = {
+        id: 'usr_tanisha',
+        username: 'tanisha',
+        name: 'Tanisha',
+        avatarColor: 'from-purple-500 to-pink-500',
+        passwordHash: hash,
+        salt,
+        createdAt: 1700000000000,
+      };
+      modified = true;
+    }
+
+    if (modified) {
       saveStoredUsers(users);
     }
   },

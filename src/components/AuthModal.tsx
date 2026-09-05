@@ -20,6 +20,7 @@ interface AuthModalProps {
   onGetShareCode: () => string;
   onImportFriendCode: (code: string) => { success: boolean; message: string; friend?: FriendSummary };
   onRemoveFriend: (friendId: string) => void;
+  onExportProgress?: () => void;
 }
 
 const AVATAR_GRADIENTS = [
@@ -46,6 +47,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onGetShareCode,
   onImportFriendCode,
   onRemoveFriend,
+  onExportProgress,
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'friends'>('profile');
   const [isCreating, setIsCreating] = useState<boolean>(false);
@@ -402,10 +404,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
               </div>
 
-              {/* Zero Server Guarantee */}
-              <div className="p-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl flex items-center gap-2.5 text-xs text-emerald-300">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>All progress and notes are kept safe locally without server crashes or credit lockouts.</span>
+              {/* Permanent Storage & Backup */}
+              <div className="p-3.5 bg-emerald-500/5 border border-emerald-500/15 rounded-xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs text-emerald-300 font-semibold">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Permanent Storage Active (IndexedDB + Eviction Protection)</span>
+                  </div>
+                </div>
+                <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  All solved problems, code solutions, revision notes, and streaks for both Anish and Tanisha are permanently preserved.
+                </p>
+                {onExportProgress && (
+                  <button
+                    type="button"
+                    onClick={onExportProgress}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white rounded-lg transition-colors cursor-pointer"
+                  >
+                    <span>💾 Download Progress Backup (JSON)</span>
+                  </button>
+                )}
               </div>
             </div>
           )}

@@ -14,13 +14,25 @@ import type {
 const MULTI_USER_STORAGE_KEY = 'strivers_a2z_multi_user_v1';
 const LEGACY_STORAGE_KEY = 'strivers_a2z_progress_v1';
 
-const DEFAULT_PROFILE: UserProfile = {
-  id: 'usr_default_anish',
+import { idbSet, idbGet, requestPersistentStorage } from '../services/storageService';
+
+export const ANISH_PROFILE: UserProfile = {
+  id: 'usr_anish',
   name: 'Anish',
   username: 'anish',
   avatarColor: 'from-orange-500 to-amber-500',
-  createdAt: Date.now(),
+  createdAt: 1700000000000,
 };
+
+export const TANISHA_PROFILE: UserProfile = {
+  id: 'usr_tanisha',
+  name: 'Tanisha',
+  username: 'tanisha',
+  avatarColor: 'from-purple-500 to-pink-500',
+  createdAt: 1700000000000,
+};
+
+const DEFAULT_PROFILE = ANISH_PROFILE;
 
 const createEmptyProgressState = (): UserProgressState => ({
   problems: {},
@@ -35,7 +47,23 @@ const getInitialStorage = (): MultiUserStorage => {
     const saved = localStorage.getItem(MULTI_USER_STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed && parsed.profiles && parsed.activeProfileId && parsed.progress) {
+      if (parsed && parsed.profiles && parsed.progress) {
+        // Ensure Anish profile & progress exists
+        if (!parsed.profiles['usr_anish']) {
+          const oldAnishProg = parsed.progress['usr_default_anish'];
+          parsed.profiles['usr_anish'] = ANISH_PROFILE;
+          parsed.progress['usr_anish'] = oldAnishProg || createEmptyProgressState();
+        }
+        // Ensure Tanisha profile & progress exists
+        if (!parsed.profiles['usr_tanisha']) {
+          parsed.profiles['usr_tanisha'] = TANISHA_PROFILE;
+          parsed.progress['usr_tanisha'] = createEmptyProgressState();
+        }
+
+        if (!parsed.activeProfileId || !parsed.profiles[parsed.activeProfileId]) {
+          parsed.activeProfileId = 'usr_anish';
+        }
+
         return parsed;
       }
     }
@@ -55,12 +83,14 @@ const getInitialStorage = (): MultiUserStorage => {
     }
 
     return {
-      activeProfileId: DEFAULT_PROFILE.id,
+      activeProfileId: ANISH_PROFILE.id,
       profiles: {
-        [DEFAULT_PROFILE.id]: DEFAULT_PROFILE,
+        [ANISH_PROFILE.id]: ANISH_PROFILE,
+        [TANISHA_PROFILE.id]: TANISHA_PROFILE,
       },
       progress: {
-        [DEFAULT_PROFILE.id]: migratedProgress,
+        [ANISH_PROFILE.id]: migratedProgress,
+        [TANISHA_PROFILE.id]: createEmptyProgressState(),
       },
       friends: {},
       version: 1,
@@ -68,9 +98,15 @@ const getInitialStorage = (): MultiUserStorage => {
   } catch (e) {
     console.error('Failed to load multi-user progress from localStorage', e);
     return {
-      activeProfileId: DEFAULT_PROFILE.id,
-      profiles: { [DEFAULT_PROFILE.id]: DEFAULT_PROFILE },
-      progress: { [DEFAULT_PROFILE.id]: createEmptyProgressState() },
+      activeProfileId: ANISH_PROFILE.id,
+      profiles: {
+        [ANISH_PROFILE.id]: ANISH_PROFILE,
+        [TANISHA_PROFILE.id]: TANISHA_PROFILE,
+      },
+      progress: {
+        [ANISH_PROFILE.id]: createEmptyProgressState(),
+        [TANISHA_PROFILE.id]: createEmptyProgressState(),
+      },
       friends: {},
       version: 1,
     };
@@ -91,10 +127,12 @@ const getYesterdayString = (): string => {
 export const useDSAProgress = () => {
   const [storage, setStorage] = useState<MultiUserStorage>(getInitialStorage);
 
-  // Sync with localStorage
+  // Sync with localStorage AND IndexedDB (dual-write permanent persistence)
   useEffect(() => {
     try {
       localStorage.setItem(MULTI_USER_STORAGE_KEY, JSON.stringify(storage));
+      idbSet(MULTI_USER_STORAGE_KEY, storage).catch(() => {});
+
       // Also sync active progress to legacy key for backwards compatibility
       if (storage.progress[storage.activeProfileId]) {
         localStorage.setItem(LEGACY_STORAGE_KEY, JSON.stringify(storage.progress[storage.activeProfileId]));
@@ -103,6 +141,24 @@ export const useDSAProgress = () => {
       console.error('Failed to save multi-user progress to localStorage', e);
     }
   }, [storage]);
+
+  // Request browser storage persistence and verify IDB backup on initial mount
+  useEffect(() => {
+    requestPersistentStorage();
+    idbGet<MultiUserStorage>(MULTI_USER_STORAGE_KEY).then(idbData => {
+      if (idbData && idbData.profiles && idbData.progress) {
+        setStorage(prev => {
+          const mergedProfiles = { ...idbData.profiles, ...prev.profiles };
+          const mergedProgress = { ...idbData.progress, ...prev.progress };
+          return {
+            ...prev,
+            profiles: mergedProfiles,
+            progress: mergedProgress,
+          };
+        });
+      }
+    }).catch(() => {});
+  }, []);
 
   // Current active profile
   const currentProfile: UserProfile = useMemo(() => {

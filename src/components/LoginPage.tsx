@@ -99,11 +99,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     }
   };
 
-  const handleQuickDemo = () => {
-    setLoginUsername('anish');
-    setLoginPassword('anish123');
-  };
-
   return (
     <div className="min-h-screen w-full bg-[#09090b] flex flex-col items-center justify-center p-4 relative overflow-hidden font-firaSans text-zinc-100 selection:bg-[#ea763f]/30">
       {/* Background Decorative Glow */}
@@ -235,15 +230,35 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              {/* Demo Auto-fill Helper */}
-              <div className="pt-2 text-center">
-                <button
-                  type="button"
-                  onClick={handleQuickDemo}
-                  className="text-[11px] text-zinc-400 hover:text-orange-400 transition-colors underline cursor-pointer"
-                >
-                  Quick Sign-In as Anish (Default Account)
-                </button>
+              {/* Dedicated Learner 1-Click Access for Anish and Tanisha */}
+              <div className="pt-3 border-t border-white/5 space-y-2">
+                <div className="text-[11px] text-zinc-400 text-center font-medium">
+                  Dedicated Learner 1-Click Fill:
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginUsername('anish');
+                      setLoginPassword('anish123');
+                    }}
+                    className="flex items-center justify-center gap-1.5 py-2 px-3 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-orange-300 rounded-xl text-xs font-medium transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
+                  >
+                    <User className="w-3.5 h-3.5 text-orange-400" />
+                    <span>Anish</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginUsername('tanisha');
+                      setLoginPassword('tanisha123');
+                    }}
+                    className="flex items-center justify-center gap-1.5 py-2 px-3 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded-xl text-xs font-medium transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
+                  >
+                    <User className="w-3.5 h-3.5 text-purple-400" />
+                    <span>Tanisha</span>
+                  </button>
+                </div>
               </div>
             </form>
           ) : (

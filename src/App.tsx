@@ -484,6 +484,7 @@ export function App() {
         onGetShareCode={getShareCode}
         onImportFriendCode={importFriendCode}
         onRemoveFriend={removeFriend}
+        onExportProgress={exportProgress}
       />
     </div>
   );
