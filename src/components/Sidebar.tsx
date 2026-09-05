@@ -1,18 +1,23 @@
 import React from 'react';
 import { House, FileText, Code2, Download, Upload, RotateCcw, Flame } from 'lucide-react';
+import type { UserProfile } from '../types/dsa';
 
 interface SidebarProps {
   streak: number;
+  currentProfile?: UserProfile;
   onExport: () => void;
   onImportClick: () => void;
   onReset: () => void;
+  onOpenAuth?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   streak,
+  currentProfile,
   onExport,
   onImportClick,
   onReset,
+  onOpenAuth,
 }) => {
   return (
     <aside className="hidden lg:flex flex-col justify-between w-[74px] h-screen sticky top-0 bg-[#0e0e0f] border-r border-[var(--border)] py-3 px-2 z-30 shrink-0 select-none">
@@ -113,10 +118,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <RotateCcw className="w-4 h-4" />
         </button>
 
-        {/* User avatar mockup */}
-        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-xs font-bold text-white shadow-sm mt-1">
-          A
-        </div>
+        {/* User profile avatar button */}
+        <button
+          onClick={onOpenAuth}
+          className={`w-8 h-8 rounded-xl bg-gradient-to-tr ${currentProfile?.avatarColor || 'from-orange-500 to-amber-500'} flex items-center justify-center text-xs font-bold text-white shadow-sm mt-1 cursor-pointer hover:scale-110 transition-transform`}
+          title={`${currentProfile?.name || 'User'} (@${currentProfile?.username || 'user'}) - Click to switch profile / learn with friend`}
+        >
+          {currentProfile?.name?.charAt(0).toUpperCase() || 'A'}
+        </button>
       </div>
     </aside>
   );

@@ -103,3 +103,29 @@ export interface StatsSummary {
   hard: { solved: number; total: number };
   streak: number;
 }
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  username: string;
+  avatarColor: string;
+  createdAt: number;
+}
+
+export interface FriendSummary {
+  profile: UserProfile;
+  totalSolved: number;
+  totalProblems: number;
+  activeStreak: number;
+  solvedProblemIds: string[];
+  updatedAt: number;
+}
+
+export interface MultiUserStorage {
+  activeProfileId: string;
+  profiles: Record<string, UserProfile>;
+  progress: Record<string, UserProgressState>;
+  friends: Record<string, FriendSummary>;
+  version: number;
+}
+

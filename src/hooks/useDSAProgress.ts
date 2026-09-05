@@ -1,25 +1,80 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import confetti from 'canvas-confetti';
-import type { UserProgressState, ProblemStatus, ProblemUserData, Language, SubmissionRecord } from '../types/dsa';
+import type { 
+  UserProgressState, 
+  ProblemStatus, 
+  ProblemUserData, 
+  Language, 
+  SubmissionRecord,
+  UserProfile,
+  FriendSummary,
+  MultiUserStorage
+} from '../types/dsa';
 
-const STORAGE_KEY = 'strivers_a2z_progress_v1';
+const MULTI_USER_STORAGE_KEY = 'strivers_a2z_multi_user_v1';
+const LEGACY_STORAGE_KEY = 'strivers_a2z_progress_v1';
 
-const getInitialState = (): UserProgressState => {
+const DEFAULT_PROFILE: UserProfile = {
+  id: 'usr_default_anish',
+  name: 'Anish',
+  username: 'anish',
+  avatarColor: 'from-orange-500 to-amber-500',
+  createdAt: Date.now(),
+};
+
+const createEmptyProgressState = (): UserProgressState => ({
+  problems: {},
+  activeStreak: 0,
+  lastActiveDate: '',
+  activityDates: [],
+  version: 1,
+});
+
+const getInitialStorage = (): MultiUserStorage => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(MULTI_USER_STORAGE_KEY);
     if (saved) {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.profiles && parsed.activeProfileId && parsed.progress) {
+        return parsed;
+      }
     }
+
+    // Check for legacy progress migration
+    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+    let migratedProgress: UserProgressState = createEmptyProgressState();
+    if (legacy) {
+      try {
+        const parsedLegacy = JSON.parse(legacy);
+        if (parsedLegacy && parsedLegacy.problems) {
+          migratedProgress = parsedLegacy;
+        }
+      } catch {
+        // ignore legacy parse error
+      }
+    }
+
+    return {
+      activeProfileId: DEFAULT_PROFILE.id,
+      profiles: {
+        [DEFAULT_PROFILE.id]: DEFAULT_PROFILE,
+      },
+      progress: {
+        [DEFAULT_PROFILE.id]: migratedProgress,
+      },
+      friends: {},
+      version: 1,
+    };
   } catch (e) {
-    console.error('Failed to load DSA progress from localStorage', e);
+    console.error('Failed to load multi-user progress from localStorage', e);
+    return {
+      activeProfileId: DEFAULT_PROFILE.id,
+      profiles: { [DEFAULT_PROFILE.id]: DEFAULT_PROFILE },
+      progress: { [DEFAULT_PROFILE.id]: createEmptyProgressState() },
+      friends: {},
+      version: 1,
+    };
   }
-  return {
-    problems: {},
-    activeStreak: 0,
-    lastActiveDate: '',
-    activityDates: [],
-    version: 1,
-  };
 };
 
 const getTodayString = (): string => {
@@ -34,16 +89,40 @@ const getYesterdayString = (): string => {
 };
 
 export const useDSAProgress = () => {
-  const [progress, setProgress] = useState<UserProgressState>(getInitialState);
+  const [storage, setStorage] = useState<MultiUserStorage>(getInitialStorage);
 
   // Sync with localStorage
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+      localStorage.setItem(MULTI_USER_STORAGE_KEY, JSON.stringify(storage));
+      // Also sync active progress to legacy key for backwards compatibility
+      if (storage.progress[storage.activeProfileId]) {
+        localStorage.setItem(LEGACY_STORAGE_KEY, JSON.stringify(storage.progress[storage.activeProfileId]));
+      }
     } catch (e) {
-      console.error('Failed to save DSA progress to localStorage', e);
+      console.error('Failed to save multi-user progress to localStorage', e);
     }
-  }, [progress]);
+  }, [storage]);
+
+  // Current active profile
+  const currentProfile: UserProfile = useMemo(() => {
+    return storage.profiles[storage.activeProfileId] || DEFAULT_PROFILE;
+  }, [storage.profiles, storage.activeProfileId]);
+
+  // List of all local profiles
+  const profilesList: UserProfile[] = useMemo(() => {
+    return Object.values(storage.profiles);
+  }, [storage.profiles]);
+
+  // Current active progress state
+  const progress: UserProgressState = useMemo(() => {
+    return storage.progress[storage.activeProfileId] || createEmptyProgressState();
+  }, [storage.progress, storage.activeProfileId]);
+
+  // List of friends
+  const friendsList: FriendSummary[] = useMemo(() => {
+    return Object.values(storage.friends || {});
+  }, [storage.friends]);
 
   const updateStreakOnSolve = (prevState: UserProgressState): Pick<UserProgressState, 'activeStreak' | 'lastActiveDate' | 'activityDates'> => {
     const today = getTodayString();
@@ -80,10 +159,184 @@ export const useDSAProgress = () => {
         colors: ['#38bdf8', '#34d399', '#f59e0b', '#a855f7'],
       });
     } catch {
-      // ignore in non-browser env
+      // ignore
     }
   }, []);
 
+  // Update progress for active profile helper
+  const updateCurrentProgress = useCallback((updater: (prev: UserProgressState) => UserProgressState) => {
+    setStorage(prev => {
+      const activeId = prev.activeProfileId;
+      const currentProg = prev.progress[activeId] || createEmptyProgressState();
+      const updatedProg = updater(currentProg);
+      return {
+        ...prev,
+        progress: {
+          ...prev.progress,
+          [activeId]: updatedProg,
+        },
+      };
+    });
+  }, []);
+
+  // Profile Management Actions
+  const switchProfile = useCallback((profileId: string) => {
+    if (storage.profiles[profileId]) {
+      setStorage(prev => ({
+        ...prev,
+        activeProfileId: profileId,
+      }));
+    }
+  }, [storage.profiles]);
+
+  const createProfile = useCallback((name: string, username: string, avatarColor?: string): UserProfile => {
+    const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '') || `user_${Date.now().toString().slice(-4)}`;
+    const newProfile: UserProfile = {
+      id: `usr_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      name: name.trim() || 'DSA Learner',
+      username: cleanUsername,
+      avatarColor: avatarColor || 'from-sky-500 to-indigo-500',
+      createdAt: Date.now(),
+    };
+
+    setStorage(prev => ({
+      ...prev,
+      activeProfileId: newProfile.id,
+      profiles: {
+        ...prev.profiles,
+        [newProfile.id]: newProfile,
+      },
+      progress: {
+        ...prev.progress,
+        [newProfile.id]: createEmptyProgressState(),
+      },
+    }));
+
+    return newProfile;
+  }, []);
+
+  const updateProfile = useCallback((name: string, username: string, avatarColor?: string) => {
+    setStorage(prev => {
+      const activeId = prev.activeProfileId;
+      const existing = prev.profiles[activeId];
+      if (!existing) return prev;
+
+      const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '') || existing.username;
+      const updated: UserProfile = {
+        ...existing,
+        name: name.trim() || existing.name,
+        username: cleanUsername,
+        avatarColor: avatarColor || existing.avatarColor,
+      };
+
+      return {
+        ...prev,
+        profiles: {
+          ...prev.profiles,
+          [activeId]: updated,
+        },
+      };
+    });
+  }, []);
+
+  const deleteProfile = useCallback((profileId: string) => {
+    setStorage(prev => {
+      if (Object.keys(prev.profiles).length <= 1) {
+        alert('You must keep at least one profile.');
+        return prev;
+      }
+
+      const nextProfiles = { ...prev.profiles };
+      delete nextProfiles[profileId];
+
+      const nextProgress = { ...prev.progress };
+      delete nextProgress[profileId];
+
+      const remainingIds = Object.keys(nextProfiles);
+      const newActiveId = prev.activeProfileId === profileId ? remainingIds[0] : prev.activeProfileId;
+
+      return {
+        ...prev,
+        activeProfileId: newActiveId,
+        profiles: nextProfiles,
+        progress: nextProgress,
+      };
+    });
+  }, []);
+
+  // Friend Sharing & Sync
+  const getShareCode = useCallback((): string => {
+    const solvedIds = Object.entries(progress.problems)
+      .filter(([_, data]) => data.status === 'solved')
+      .map(([id]) => id);
+
+    const shareData = {
+      type: 'tuf_friend_share_v1',
+      profile: currentProfile,
+      totalSolved: solvedIds.length,
+      activeStreak: progress.activeStreak || 0,
+      solvedProblemIds: solvedIds,
+      updatedAt: Date.now(),
+    };
+
+    try {
+      return btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+    } catch {
+      return JSON.stringify(shareData);
+    }
+  }, [currentProfile, progress]);
+
+  const importFriendCode = useCallback((codeStr: string): { success: boolean; message: string; friend?: FriendSummary } => {
+    try {
+      let rawJson = codeStr.trim();
+      if (!rawJson.startsWith('{')) {
+        rawJson = decodeURIComponent(escape(atob(rawJson)));
+      }
+      const parsed = JSON.parse(rawJson);
+
+      if (!parsed || !parsed.profile || !Array.isArray(parsed.solvedProblemIds)) {
+        return { success: false, message: 'Invalid friend code format. Please check the code.' };
+      }
+
+      const friendSummary: FriendSummary = {
+        profile: parsed.profile,
+        totalSolved: parsed.totalSolved || parsed.solvedProblemIds.length,
+        totalProblems: 474,
+        activeStreak: parsed.activeStreak || 0,
+        solvedProblemIds: parsed.solvedProblemIds,
+        updatedAt: parsed.updatedAt || Date.now(),
+      };
+
+      setStorage(prev => ({
+        ...prev,
+        friends: {
+          ...(prev.friends || {}),
+          [parsed.profile.id]: friendSummary,
+        },
+      }));
+
+      return {
+        success: true,
+        message: `Successfully connected with ${parsed.profile.name} (@${parsed.profile.username})! Solved: ${friendSummary.totalSolved}/474`,
+        friend: friendSummary,
+      };
+    } catch (e: any) {
+      return { success: false, message: 'Failed to read friend code: ' + (e?.message || 'Syntax error') };
+    }
+  }, []);
+
+  const removeFriend = useCallback((friendId: string) => {
+    setStorage(prev => {
+      const nextFriends = { ...(prev.friends || {}) };
+      delete nextFriends[friendId];
+      return {
+        ...prev,
+        friends: nextFriends,
+      };
+    });
+  }, []);
+
+  // Problem State Operations
   const getStatus = useCallback((problemId: string): ProblemStatus => {
     return progress.problems[problemId]?.status || 'todo';
   }, [progress.problems]);
@@ -100,8 +353,12 @@ export const useDSAProgress = () => {
     return progress.problems[problemId]?.code?.[lang];
   }, [progress.problems]);
 
+  const getSubmissions = useCallback((problemId: string): SubmissionRecord[] => {
+    return progress.problems[problemId]?.submissions || [];
+  }, [progress.problems]);
+
   const toggleSolved = useCallback((problemId: string) => {
-    setProgress(prev => {
+    updateCurrentProgress(prev => {
       const current = prev.problems[problemId]?.status || 'todo';
       const isNowSolved = current !== 'solved';
 
@@ -134,10 +391,10 @@ export const useDSAProgress = () => {
         },
       };
     });
-  }, [fireCelebration]);
+  }, [updateCurrentProgress, fireCelebration]);
 
   const setStatus = useCallback((problemId: string, status: ProblemStatus) => {
-    setProgress(prev => {
+    updateCurrentProgress(prev => {
       const existingData: ProblemUserData = prev.problems[problemId] || {
         status: 'todo',
         starred: false,
@@ -165,10 +422,10 @@ export const useDSAProgress = () => {
         },
       };
     });
-  }, [fireCelebration]);
+  }, [updateCurrentProgress, fireCelebration]);
 
   const toggleStarred = useCallback((problemId: string) => {
-    setProgress(prev => {
+    updateCurrentProgress(prev => {
       const existingData: ProblemUserData = prev.problems[problemId] || {
         status: 'todo',
         starred: false,
@@ -189,10 +446,10 @@ export const useDSAProgress = () => {
         },
       };
     });
-  }, []);
+  }, [updateCurrentProgress]);
 
   const saveNotes = useCallback((problemId: string, notes: string) => {
-    setProgress(prev => {
+    updateCurrentProgress(prev => {
       const existingData: ProblemUserData = prev.problems[problemId] || {
         status: 'todo',
         starred: false,
@@ -213,10 +470,10 @@ export const useDSAProgress = () => {
         },
       };
     });
-  }, []);
+  }, [updateCurrentProgress]);
 
   const saveCode = useCallback((problemId: string, lang: Language, code: string) => {
-    setProgress(prev => {
+    updateCurrentProgress(prev => {
       const existingData: ProblemUserData = prev.problems[problemId] || {
         status: 'todo',
         starred: false,
@@ -240,14 +497,10 @@ export const useDSAProgress = () => {
         },
       };
     });
-  }, []);
-
-  const getSubmissions = useCallback((problemId: string): SubmissionRecord[] => {
-    return progress.problems[problemId]?.submissions || [];
-  }, [progress.problems]);
+  }, [updateCurrentProgress]);
 
   const addSubmission = useCallback((problemId: string, submission: Omit<SubmissionRecord, 'id' | 'timestamp'>) => {
-    setProgress(prev => {
+    updateCurrentProgress(prev => {
       const existingData: ProblemUserData = prev.problems[problemId] || {
         status: 'todo',
         starred: false,
@@ -287,54 +540,59 @@ export const useDSAProgress = () => {
         },
       };
     });
-  }, [fireCelebration]);
+  }, [updateCurrentProgress, fireCelebration]);
 
   const resetProgress = useCallback(() => {
-    if (window.confirm('Are you sure you want to reset all progress? This action cannot be undone.')) {
-      const resetState: UserProgressState = {
-        problems: {},
-        activeStreak: 0,
-        lastActiveDate: '',
-        activityDates: [],
-        version: 1,
-      };
-      setProgress(resetState);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(resetState));
+    if (window.confirm(`Reset all progress for profile "${currentProfile.name}"? This cannot be undone.`)) {
+      updateCurrentProgress(() => createEmptyProgressState());
     }
-  }, []);
+  }, [currentProfile.name, updateCurrentProgress]);
 
   const exportProgress = useCallback(() => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(progress, null, 2));
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(storage, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `dsa_progress_backup_${getTodayString()}.json`);
+    downloadAnchor.setAttribute('download', `dsa_${currentProfile.username}_backup_${getTodayString()}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-  }, [progress]);
+  }, [storage, currentProfile.username]);
 
   const importProgress = useCallback((jsonStr: string): { success: boolean; message: string } => {
     try {
       const parsed = JSON.parse(jsonStr);
-      if (!parsed || typeof parsed !== 'object' || !parsed.problems) {
-        return { success: false, message: 'Invalid backup file format: missing problems object' };
+      // Support importing full multi-user storage or single progress state
+      if (parsed.profiles && parsed.activeProfileId && parsed.progress) {
+        setStorage(parsed);
+        return { success: true, message: `Successfully restored full backup with ${Object.keys(parsed.profiles).length} profiles!` };
+      } else if (parsed.problems) {
+        updateCurrentProgress(() => ({
+          problems: parsed.problems || {},
+          activeStreak: Number(parsed.activeStreak) || 0,
+          lastActiveDate: parsed.lastActiveDate || '',
+          activityDates: Array.isArray(parsed.activityDates) ? parsed.activityDates : [],
+          version: 1,
+        }));
+        return { success: true, message: `Successfully restored progress for ${Object.keys(parsed.problems).length} problems into "${currentProfile.name}"!` };
       }
-      const imported: UserProgressState = {
-        problems: parsed.problems || {},
-        activeStreak: Number(parsed.activeStreak) || 0,
-        lastActiveDate: parsed.lastActiveDate || '',
-        activityDates: Array.isArray(parsed.activityDates) ? parsed.activityDates : [],
-        version: 1,
-      };
-      setProgress(imported);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(imported));
-      return { success: true, message: `Successfully restored progress for ${Object.keys(imported.problems).length} problems!` };
+      return { success: false, message: 'Unrecognized file format' };
     } catch (e: any) {
       return { success: false, message: 'Failed to parse JSON: ' + (e?.message || 'Syntax error') };
     }
-  }, []);
+  }, [updateCurrentProgress, currentProfile.name]);
 
   return {
+    storage,
+    currentProfile,
+    profiles: profilesList,
+    switchProfile,
+    createProfile,
+    updateProfile,
+    deleteProfile,
+    friends: friendsList,
+    getShareCode,
+    importFriendCode,
+    removeFriend,
     progress,
     getStatus,
     isStarred,

@@ -8,11 +8,22 @@ import { FilterBar } from './components/FilterBar';
 import { StepAccordion } from './components/StepAccordion';
 import { ProblemWorkspace } from './components/ProblemWorkspace';
 import { VideoModal } from './components/VideoModal';
+import { AuthModal } from './components/AuthModal';
 
 const sheetData = sheetDataRaw as SheetData;
 
 export function App() {
   const {
+    currentProfile,
+    profiles,
+    switchProfile,
+    createProfile,
+    updateProfile,
+    deleteProfile,
+    friends,
+    getShareCode,
+    importFriendCode,
+    removeFriend,
     progress,
     getStatus,
     isStarred,
@@ -42,6 +53,7 @@ export function App() {
   const [activeProblem, setActiveProblem] = useState<Problem | null>(null);
   const [activeVideo, setActiveVideo] = useState<{ url: string; title: string } | null>(null);
   const [showKnowMore, setShowKnowMore] = useState<boolean>(false);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Flat list of all problems for consecutive navigation
@@ -67,6 +79,8 @@ export function App() {
         if (found) {
           setActiveProblem(found);
         }
+      } else if (hash === '#friends' || hash.startsWith('#friends')) {
+        setShowAuthModal(true);
       }
     };
 
@@ -258,9 +272,11 @@ export function App() {
       {/* Exact Left Sidebar */}
       <Sidebar
         streak={stats.streak}
+        currentProfile={currentProfile}
         onExport={exportProgress}
         onImportClick={() => fileInputRef.current?.click()}
         onReset={resetProgress}
+        onOpenAuth={() => setShowAuthModal(true)}
       />
 
       {/* Main Page Area */}
@@ -275,6 +291,22 @@ export function App() {
                   Striver&apos;s A2Z Sheet - Learn DSA from A to Z
                 </h1>
                 <div className="flex items-center gap-2 justify-end w-fit">
+                  {/* User Profile / Learner Account Pill */}
+                  <button
+                    onClick={() => setShowAuthModal(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-xs text-zinc-200 transition-colors cursor-pointer shadow-sm"
+                    title="Switch Learner Profile / Learn with Friend"
+                  >
+                    <div className={`w-5 h-5 rounded-md bg-gradient-to-tr ${currentProfile.avatarColor} flex items-center justify-center text-[10px] font-bold text-white shadow-sm`}>
+                      {currentProfile.name.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="font-semibold text-white">{currentProfile.name}</span>
+                    <span className="text-zinc-500 font-mono hidden sm:inline">@{currentProfile.username}</span>
+                    <span className="text-[10px] font-medium text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/20 hidden md:inline">
+                      Learn Together
+                    </span>
+                  </button>
+
                   <span className="hidden md:inline-flex shrink-0 items-center rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] px-3 py-1.5 text-xs text-[var(--base-text-muted)] shadow-sm">
                     Last updated : December 13, 2025
                   </span>
@@ -392,6 +424,24 @@ export function App() {
           onClose={() => setActiveVideo(null)}
         />
       )}
+
+      {/* Learner Account & Friend Sync Modal */}
+      <AuthModal
+        currentProfile={currentProfile}
+        profiles={profiles}
+        friends={friends}
+        totalSolved={stats.solved}
+        activeStreak={stats.streak}
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSwitchProfile={switchProfile}
+        onCreateProfile={createProfile}
+        onUpdateProfile={updateProfile}
+        onDeleteProfile={deleteProfile}
+        onGetShareCode={getShareCode}
+        onImportFriendCode={importFriendCode}
+        onRemoveFriend={removeFriend}
+      />
     </div>
   );
 }
