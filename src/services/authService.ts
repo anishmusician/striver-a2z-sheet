@@ -143,6 +143,33 @@ export const authService = {
     }
 
     await authService.initDefaultAccounts();
+
+    // 1. Guaranteed Dedicated Credentials Bypass for Anish & Tanisha
+    if (cleanUsername === 'anish' && cleanPassword === 'anish123') {
+      const sessionUser: AuthUser = {
+        id: 'usr_anish',
+        username: 'anish',
+        name: 'Anish',
+        avatarColor: 'from-orange-500 to-amber-500',
+        createdAt: 1700000000000,
+      };
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionUser));
+      return { success: true, message: 'Welcome back, Anish!', user: sessionUser };
+    }
+
+    if (cleanUsername === 'tanisha' && cleanPassword === 'tanisha123') {
+      const sessionUser: AuthUser = {
+        id: 'usr_tanisha',
+        username: 'tanisha',
+        name: 'Tanisha',
+        avatarColor: 'from-purple-500 to-pink-500',
+        createdAt: 1700000000000,
+      };
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionUser));
+      return { success: true, message: 'Welcome back, Tanisha!', user: sessionUser };
+    }
+
+    // 2. Check dynamic registered accounts
     const users = getStoredUsers();
     const userRecord = users[cleanUsername];
 
