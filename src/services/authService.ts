@@ -37,6 +37,7 @@ function generateSalt(): string {
 }
 
 import { idbSet, idbGet } from './storageService';
+import { apiClient } from './apiClient';
 
 function getStoredUsers(): Record<string, StoredUserRecord> {
   try {
@@ -142,9 +143,23 @@ export const authService = {
       return { success: false, message: 'Please enter both username and password.' };
     }
 
+    // 1. Attempt Server-Side Login
+    try {
+      const serverRes = await apiClient.login(cleanUsername, cleanPassword);
+      if (serverRes.success && serverRes.user) {
+        localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(serverRes.user));
+        return { success: true, message: serverRes.message, user: serverRes.user };
+      } else if (serverRes.message && !serverRes.message.includes('Failed to connect') && !serverRes.message.includes('failed to fetch')) {
+        // Explicit credential error from server
+        return { success: false, message: serverRes.message };
+      }
+    } catch {
+      // Fallback to local credential verification if server unreachable
+    }
+
     await authService.initDefaultAccounts();
 
-    // 1. Guaranteed Dedicated Credentials Bypass for Anish & Tanisha
+    // 2. Guaranteed Dedicated Credentials Bypass for Anish & Tanisha (Offline / Local)
     if (cleanUsername === 'anish' && cleanPassword === 'anish123') {
       const sessionUser: AuthUser = {
         id: 'usr_anish',
@@ -225,6 +240,19 @@ export const authService = {
         success: false, 
         message: 'Invalid Invite Passcode. Access is restricted to dedicated learners. Ask Anish for the invite key.' 
       };
+    }
+
+    // 1. Attempt Server-Side Registration
+    try {
+      const serverRes = await apiClient.register(cleanUsername, cleanPassword, cleanName, cleanInvite, avatarColor);
+      if (serverRes.success && serverRes.user) {
+        localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(serverRes.user));
+        return { success: true, message: serverRes.message, user: serverRes.user };
+      } else if (serverRes.message && !serverRes.message.includes('Failed to connect') && !serverRes.message.includes('failed to fetch')) {
+        return { success: false, message: serverRes.message };
+      }
+    } catch {
+      // Fallback to local registration if server unreachable
     }
 
     const users = getStoredUsers();

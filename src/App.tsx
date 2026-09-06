@@ -12,7 +12,7 @@ import { AuthModal } from './components/AuthModal';
 import { LoginPage } from './components/LoginPage';
 import { authService, type AuthUser } from './services/authService';
 import { RightSidebar } from './components/RightSidebar';
-import { LogOut, RotateCcw, Upload } from 'lucide-react';
+import { LogOut, RotateCcw, Upload, Cloud, CloudOff, RefreshCw } from 'lucide-react';
 
 const sheetData = sheetDataRaw as SheetData;
 
@@ -29,6 +29,9 @@ export function App() {
     importFriendCode,
     removeFriend,
     progress,
+    syncStatus,
+    lastSyncedAt,
+    triggerServerSync,
     getStatus,
     isStarred,
     getNotes,
@@ -343,6 +346,41 @@ export function App() {
                     >
                       <Upload className="w-3.5 h-3.5" />
                       <span>Import</span>
+                    </button>
+
+                    {/* Cloud Server Sync Status */}
+                    <button
+                      onClick={async () => {
+                        await triggerServerSync();
+                        setToastMessage('Progress securely backed up to server disk!');
+                        setTimeout(() => setToastMessage(null), 3000);
+                      }}
+                      className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer shadow-xs ${
+                        syncStatus === 'synced'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200/90 hover:bg-emerald-100/70'
+                          : syncStatus === 'saving'
+                          ? 'bg-amber-50 text-amber-700 border-amber-200/90 hover:bg-amber-100/70'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                      }`}
+                      title={`Server Disk Sync: ${syncStatus} (Last synced: ${new Date(lastSyncedAt).toLocaleTimeString()}). Click to force save now.`}
+                    >
+                      {syncStatus === 'synced' ? (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                          <Cloud className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Saved to Server</span>
+                        </>
+                      ) : syncStatus === 'saving' ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+                          <span>Saving to Server...</span>
+                        </>
+                      ) : (
+                        <>
+                          <CloudOff className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Local Cache</span>
+                        </>
+                      )}
                     </button>
 
                     {/* User Profile / Learner Account Pill */}

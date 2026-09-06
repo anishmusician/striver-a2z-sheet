@@ -411,7 +411,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         {/* Security Notice Footer */}
         <div className="mt-5 p-3 rounded-xl bg-white border border-slate-200 flex items-center gap-3 text-xs text-slate-600 shadow-xs">
           <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>Protected with cryptographic SHA-256 password salting. All data is completely private to you and your study partner.</span>
+          <span>Server Persistence Active: All progress &amp; code are stored permanently on server disk for Anish &amp; Tanisha, surviving browser cache resets.</span>
         </div>
       </div>
     </div>

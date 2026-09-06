@@ -1,0 +1,20 @@
+{
+  "anish": {
+    "id": "usr_anish",
+    "username": "anish",
+    "name": "Anish",
+    "avatarColor": "from-orange-500 to-amber-500",
+    "passwordHash": "e5ff1a9e9af2a3a71ce31ac4ffa46f74801bf248247ff54e42a14d672019bae5",
+    "salt": "5ab3e5bb31205437f64fd7705588b4a6",
+    "createdAt": 1700000000000
+  },
+  "tanisha": {
+    "id": "usr_tanisha",
+    "username": "tanisha",
+    "name": "Tanisha",
+    "avatarColor": "from-purple-500 to-pink-500",
+    "passwordHash": "712bad71cdeab1047baed024003739c604d82f71f81dca8727360e95f90c4640",
+    "salt": "6a03ccccce49fcc6ea2dbe93933bcfd0",
+    "createdAt": 1700000000000
+  }
+}

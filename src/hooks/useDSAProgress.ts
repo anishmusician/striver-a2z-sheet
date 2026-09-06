@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import type { 
   UserProgressState, 
@@ -10,6 +10,7 @@ import type {
   FriendSummary,
   MultiUserStorage
 } from '../types/dsa';
+import { apiClient } from '../services/apiClient';
 
 const MULTI_USER_STORAGE_KEY = 'strivers_a2z_multi_user_v1';
 const LEGACY_STORAGE_KEY = 'strivers_a2z_progress_v1';
@@ -126,6 +127,10 @@ const getYesterdayString = (): string => {
 
 export const useDSAProgress = () => {
   const [storage, setStorage] = useState<MultiUserStorage>(getInitialStorage);
+  const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'offline'>('synced');
+  const [lastSyncedAt, setLastSyncedAt] = useState<number>(() => Date.now());
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const initialServerFetchedRef = useRef<Record<string, boolean>>({});
 
   // Sync with localStorage AND IndexedDB (dual-write permanent persistence)
   useEffect(() => {
@@ -164,6 +169,129 @@ export const useDSAProgress = () => {
   const currentProfile: UserProfile = useMemo(() => {
     return storage.profiles[storage.activeProfileId] || DEFAULT_PROFILE;
   }, [storage.profiles, storage.activeProfileId]);
+
+  // 1. Fetch server-stored progress whenever the active profile changes
+  useEffect(() => {
+    const username = currentProfile.username;
+    if (!username) return;
+
+    let isMounted = true;
+    apiClient.getUserProgress(username)
+      .then(res => {
+        if (!isMounted) return;
+        if (res.success && res.progress) {
+          setStorage(prev => {
+            const activeId = prev.activeProfileId;
+            const localProg = prev.progress[activeId] || createEmptyProgressState();
+            const serverProg = res.progress!;
+
+            // Smart merge server and local problems
+            const mergedProblems = { ...(serverProg.problems || {}) };
+            for (const [pId, localP] of Object.entries(localProg.problems || {})) {
+              const servP = mergedProblems[pId];
+              if (!servP) {
+                mergedProblems[pId] = localP;
+              } else {
+                const localTime = localP.updatedAt || 0;
+                const servTime = servP.updatedAt || 0;
+                if (localTime >= servTime) {
+                  mergedProblems[pId] = {
+                    ...servP,
+                    ...localP,
+                    code: { ...(servP.code || {}), ...(localP.code || {}) },
+                    notes: localP.notes || servP.notes || '',
+                    status: localP.status !== 'todo' ? localP.status : (servP.status || 'todo'),
+                    starred: localP.starred || servP.starred || false,
+                  };
+                } else {
+                  mergedProblems[pId] = {
+                    ...localP,
+                    ...servP,
+                    code: { ...(localP.code || {}), ...(servP.code || {}) },
+                    notes: servP.notes || localP.notes || '',
+                    status: servP.status !== 'todo' ? servP.status : (localP.status || 'todo'),
+                    starred: servP.starred || localP.starred || false,
+                  };
+                }
+              }
+            }
+
+            const mergedDates = Array.from(new Set([
+              ...(serverProg.activityDates || []),
+              ...(localProg.activityDates || []),
+            ]));
+
+            const mergedStreak = Math.max(serverProg.activeStreak || 0, localProg.activeStreak || 0);
+
+            const finalProg: UserProgressState = {
+              problems: mergedProblems,
+              activeStreak: mergedStreak,
+              lastActiveDate: serverProg.lastActiveDate || localProg.lastActiveDate || '',
+              activityDates: mergedDates,
+              version: 1,
+            };
+
+            return {
+              ...prev,
+              progress: {
+                ...prev.progress,
+                [activeId]: finalProg,
+              },
+            };
+          });
+
+          setSyncStatus('synced');
+          setLastSyncedAt(Date.now());
+          initialServerFetchedRef.current[username] = true;
+        } else {
+          setSyncStatus('offline');
+        }
+      })
+      .catch(() => {
+        if (isMounted) setSyncStatus('offline');
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentProfile.username]);
+
+  // 2. Debounced auto-save to server disk whenever active progress updates
+  useEffect(() => {
+    const activeProg = storage.progress[storage.activeProfileId];
+    const username = currentProfile.username;
+    if (!activeProg || !username) return;
+
+    if (!initialServerFetchedRef.current[username]) {
+      return;
+    }
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    setSyncStatus('saving');
+    saveTimeoutRef.current = setTimeout(() => {
+      apiClient.saveUserProgress(username, activeProg)
+        .then(res => {
+          if (res.success) {
+            setSyncStatus('synced');
+            setLastSyncedAt(Date.now());
+          } else {
+            setSyncStatus('offline');
+          }
+        })
+        .catch(() => {
+          setSyncStatus('offline');
+        });
+    }, 600);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [storage.progress, storage.activeProfileId, currentProfile.username]);
 
   // List of all local profiles
   const profilesList: UserProfile[] = useMemo(() => {
@@ -598,11 +726,30 @@ export const useDSAProgress = () => {
     });
   }, [updateCurrentProgress, fireCelebration]);
 
+  const triggerServerSync = useCallback(async () => {
+    const activeProg = storage.progress[storage.activeProfileId];
+    const username = currentProfile.username;
+    if (!activeProg || !username) return;
+    setSyncStatus('saving');
+    try {
+      const res = await apiClient.saveUserProgress(username, activeProg);
+      if (res.success) {
+        setSyncStatus('synced');
+        setLastSyncedAt(Date.now());
+      } else {
+        setSyncStatus('offline');
+      }
+    } catch {
+      setSyncStatus('offline');
+    }
+  }, [storage.progress, storage.activeProfileId, currentProfile.username]);
+
   const resetProgress = useCallback(() => {
     if (window.confirm(`Reset all progress for profile "${currentProfile.name}"? This cannot be undone.`)) {
       updateCurrentProgress(() => createEmptyProgressState());
+      apiClient.resetUserProgress(currentProfile.username).catch(() => {});
     }
-  }, [currentProfile.name, updateCurrentProgress]);
+  }, [currentProfile.name, currentProfile.username, updateCurrentProgress]);
 
   const exportProgress = useCallback(() => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(storage, null, 2));
@@ -650,6 +797,9 @@ export const useDSAProgress = () => {
     importFriendCode,
     removeFriend,
     progress,
+    syncStatus,
+    lastSyncedAt,
+    triggerServerSync,
     getStatus,
     isStarred,
     getNotes,
