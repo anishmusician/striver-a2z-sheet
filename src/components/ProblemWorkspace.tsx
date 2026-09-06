@@ -141,13 +141,34 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
 
   // Initialize starters and saved code per language
   useEffect(() => {
-    const userSaved = getSavedCode ? getSavedCode(selectedLang) : savedCode;
+    let userSaved = getSavedCode ? getSavedCode(selectedLang) : savedCode;
     const starterTemplate = 
-      userSaved ||
       detail?.starters?.[selectedLang] ||
       problem.starters[selectedLang] ||
       '';
-    setCode(starterTemplate);
+
+    // Auto-discard any legacy pre-filled solutions that were cached in browser localStorage
+    if (userSaved && (
+      userSaved.includes('if (type.equals("Character"))') ||
+      userSaved.includes('sizes = {"Character": 1') ||
+      userSaved.includes('if (type == "Character")') ||
+      userSaved.includes('sizes = { Character: 1') ||
+      userSaved.includes('if (loopDepth == 0) return "O(1)"') ||
+      userSaved.includes('loopDepth > 1 else ("O(N)"') ||
+      userSaved.includes('for (int i = 1; i <= n; i++) {\n            for (int j = 1; j <= i') ||
+      userSaved.includes('print("* " * i)') ||
+      userSaved.includes('TreeSet<Integer> set = new TreeSet<>()') ||
+      userSaved.includes('return Array.from(new Set(nums))') ||
+      userSaved.includes('return atMostK(s, k) - atMostK(s, k - 1)') ||
+      userSaved.includes('ListNode head = new ListNode(arr[0])') ||
+      userSaved.includes('Node head = new Node(arr[0])') ||
+      userSaved.includes('return n | (n + 1);') ||
+      userSaved.includes('pq.offer(val)')
+    )) {
+      userSaved = undefined;
+    }
+
+    setCode(userSaved || starterTemplate);
     setConsoleOutput('');
     setReturnValue(null);
     setRunStatus('idle');
