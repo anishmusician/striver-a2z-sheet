@@ -546,34 +546,37 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
       )}
 
       {/* TOP HEADER BAR (Clean, Pure White, High Contrast) */}
-      <header className="h-14 bg-white border-b border-slate-200 px-4 flex items-center justify-between gap-3 shrink-0 shadow-2xs">
+      <header className="relative h-14 bg-white border-b border-slate-200 px-4 flex items-center justify-between gap-3 shrink-0 shadow-2xs select-none">
         {/* Left: Navigation & Problem Title */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-3 min-w-0 max-w-[35%] lg:max-w-[40%] z-10">
           <button
             onClick={onClose}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer shrink-0"
             title="Return to A2Z Sheet (Esc)"
           >
             <ChevronLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Sheet</span>
           </button>
 
-          <div className="h-4 w-px bg-slate-200 hidden sm:block" />
+          <div className="h-4 w-px bg-slate-200 hidden sm:block shrink-0" />
 
           {/* Problem Index & Title */}
           <div className="flex items-center gap-2 min-w-0">
-            <span className={`text-xs px-2.5 py-0.5 rounded-full border font-semibold ${difficultyColors[problem.difficulty]}`}>
+            <span className={`text-xs px-2.5 py-0.5 rounded-full border font-semibold shrink-0 ${difficultyColors[problem.difficulty]}`}>
               {problem.difficulty}
             </span>
 
-            <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+            <h1 
+              className="text-sm sm:text-base font-bold text-slate-900 truncate"
+              title={detail?.name || problem.title}
+            >
               {currentIndex >= 0 ? `${currentIndex + 1}. ` : ''}{detail?.name || problem.title}
             </h1>
 
             {/* Star Icon */}
             <button
               onClick={onToggleStarred}
-              className={`p-1 rounded-md transition-colors cursor-pointer ${
+              className={`p-1 rounded-md transition-colors cursor-pointer shrink-0 ${
                 isStarred ? 'text-amber-500 bg-amber-50' : 'text-slate-400 hover:text-amber-500 hover:bg-slate-100'
               }`}
               title={isStarred ? 'Starred for revision' : 'Star for revision'}
@@ -583,24 +586,24 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
           </div>
         </div>
 
-        {/* Center: Prev / Next Switcher */}
-        <div className="hidden md:flex items-center gap-1 bg-slate-100 border border-slate-200 rounded-lg p-0.5">
+        {/* Center: Prev / Next Switcher (Mathematically centered & fixed-width so it never shifts horizontally) */}
+        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center bg-slate-100/90 border border-slate-200/90 rounded-xl p-1 shadow-2xs z-10 transition-all">
           <button
             disabled={!prevProblem}
             onClick={() => prevProblem && onNavigateProblem(prevProblem)}
-            className="flex items-center gap-1 px-2.5 py-1 text-xs text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white rounded transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-700 hover:text-slate-900 hover:bg-white active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-none hover:shadow-2xs"
             title="Previous Problem"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
             <span>Prev</span>
           </button>
-          <span className="text-[11px] text-slate-500 font-mono px-1">
+          <span className="w-20 text-center text-xs font-bold text-slate-600 font-mono tabular-nums tracking-tight select-none">
             {currentIndex + 1} / {allProblems.length}
           </span>
           <button
             disabled={!nextProblem}
             onClick={() => nextProblem && onNavigateProblem(nextProblem)}
-            className="flex items-center gap-1 px-2.5 py-1 text-xs text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white rounded transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-700 hover:text-slate-900 hover:bg-white active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-none hover:shadow-2xs"
             title="Next Problem"
           >
             <span>Next</span>
@@ -609,7 +612,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
         </div>
 
         {/* Right: Actions, Links & Fullscreen */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 z-10">
           {/* Status Dropdown */}
           <select
             value={status}
