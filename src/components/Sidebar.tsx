@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flame, LogOut } from 'lucide-react';
+import { Flame, LogOut, Download } from 'lucide-react';
 import type { UserProfile } from '../types/dsa';
 
 interface SidebarProps {
@@ -15,6 +15,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   streak,
   currentProfile,
+  onExport,
   onOpenAuth,
   onLogout,
 }) => {
@@ -81,6 +82,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <Flame className="w-4 h-4 fill-orange-500 text-orange-500 animate-pulse" />
           <span className="text-[10px] font-extrabold font-mono mt-0.5 tracking-tight text-orange-600">{streak}d</span>
         </div>
+
+        {/* Quick Download Backup Button */}
+        {onExport && (
+          <button
+            onClick={onExport}
+            className="w-10 h-10 rounded-2xl border border-slate-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/70 hover:shadow-md hover:shadow-emerald-200/40 hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center text-slate-600 hover:text-emerald-700 cursor-pointer shadow-xs group"
+            title="💾 Download Progress Backup (JSON) - All progress for Anish & Tanisha"
+          >
+            <Download className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+          </button>
+        )}
 
         {/* User profile avatar button */}
         <button

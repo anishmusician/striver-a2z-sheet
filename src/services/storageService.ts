@@ -20,6 +20,18 @@ export async function requestPersistentStorage(): Promise<boolean> {
   return false;
 }
 
+// Check if persistent storage is active
+export async function isStoragePersisted(): Promise<boolean> {
+  if (typeof navigator !== 'undefined' && navigator.storage && navigator.storage.persisted) {
+    try {
+      return await navigator.storage.persisted();
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
 // Open IndexedDB database
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -70,13 +82,15 @@ export async function idbGet<T>(key: string): Promise<T | null> {
 }
 
 // Export progress state as a local JSON backup file
-export function exportProgressBackup(username: string, data: any): void {
-  const jsonStr = JSON.stringify(data, null, 2);
+export function exportProgressBackup(username?: string, data?: any): void {
+  const jsonStr = JSON.stringify(data || {}, null, 2);
   const blob = new Blob([jsonStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${username}-strivers-dsa-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const userPrefix = username ? `${username}-` : '';
+  a.download = `strivers-a2z-${userPrefix}all-progress-backup-${dateStr}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 import type { Step, Problem, ProblemStatus } from '../types/dsa';
 import { ProblemTable } from './ProblemTable';
+
+const EXPANDED_STEPS_KEY = 'strivers_a2z_expanded_steps';
+const EXPANDED_SUBSTEPS_KEY = 'strivers_a2z_expanded_substeps';
 
 interface StepAccordionProps {
   steps: Step[];
@@ -24,15 +27,35 @@ export const StepAccordion: React.FC<StepAccordionProps> = ({
   onOpenWorkspace,
   onOpenVideo,
 }) => {
-  // Step expansion state (step 1 expanded by default)
-  const [expandedSteps, setExpandedSteps] = useState<Record<string, boolean>>({
-    [steps[0]?.id || 'step-1']: true,
+  // Step expansion state (persisted to localStorage)
+  const [expandedSteps, setExpandedSteps] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem(EXPANDED_STEPS_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return { [steps[0]?.id || 'step-1']: true };
   });
 
-  // Subcategory expansion state (first subcategory of step 1 expanded by default)
-  const [expandedSubsteps, setExpandedSubsteps] = useState<Record<string, boolean>>({
-    [steps[0]?.subcategories[0]?.id || 'sub-1-1']: true,
+  // Subcategory expansion state (persisted to localStorage)
+  const [expandedSubsteps, setExpandedSubsteps] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem(EXPANDED_SUBSTEPS_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return { [steps[0]?.subcategories[0]?.id || 'sub-1-1']: true };
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(EXPANDED_STEPS_KEY, JSON.stringify(expandedSteps));
+    } catch {}
+  }, [expandedSteps]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(EXPANDED_SUBSTEPS_KEY, JSON.stringify(expandedSubsteps));
+    } catch {}
+  }, [expandedSubsteps]);
 
   const toggleStep = (stepId: string) => {
     setExpandedSteps(prev => ({ ...prev, [stepId]: !prev[stepId] }));

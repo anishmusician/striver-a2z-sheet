@@ -139,8 +139,45 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
   const editorRef = useRef<any>(null);
   const editorTheme = 'vs-code-vibrant-light';
 
+  // Continuous auto-save state & refs
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving'>('saved');
+  const isCodeLoadedRef = useRef<boolean>(false);
+  const isNotesLoadedRef = useRef<boolean>(false);
+  const activeLangRef = useRef<Language>(selectedLang);
+  const activeProblemIdRef = useRef<string>(problem.id);
+  const currentCodeRef = useRef<string>(code);
+  const currentNotesRef = useRef<string>(userNotes);
+
+  useEffect(() => {
+    currentCodeRef.current = code;
+  }, [code]);
+
+  useEffect(() => {
+    currentNotesRef.current = userNotes;
+  }, [userNotes]);
+
+  // Flush pending changes when component unmounts
+  useEffect(() => {
+    return () => {
+      if (isCodeLoadedRef.current && currentCodeRef.current) {
+        onSaveCode(activeLangRef.current, currentCodeRef.current);
+      }
+      if (isNotesLoadedRef.current && currentNotesRef.current !== undefined) {
+        onSaveNotes(currentNotesRef.current);
+      }
+    };
+  }, [onSaveCode, onSaveNotes]);
+
   // Initialize starters and saved code per language
   useEffect(() => {
+    // Flush previous code if switching problem or language
+    if (isCodeLoadedRef.current && currentCodeRef.current) {
+      onSaveCode(activeLangRef.current, currentCodeRef.current);
+    }
+    if (isNotesLoadedRef.current && currentNotesRef.current !== undefined) {
+      onSaveNotes(currentNotesRef.current);
+    }
+
     let userSaved = getSavedCode ? getSavedCode(selectedLang) : savedCode;
     const starterTemplate = 
       detail?.starters?.[selectedLang] ||
@@ -168,16 +205,54 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
       userSaved = undefined;
     }
 
-    setCode(userSaved || starterTemplate);
+    const initialCode = userSaved || starterTemplate;
+    setCode(initialCode);
+    currentCodeRef.current = initialCode;
+    activeLangRef.current = selectedLang;
+    activeProblemIdRef.current = problem.id;
+    isCodeLoadedRef.current = true;
+    setSaveStatus('saved');
+
     setConsoleOutput('');
     setReturnValue(null);
     setRunStatus('idle');
     setExecutionTime(null);
-  }, [problem.id, selectedLang, getSavedCode, savedCode, detail, problem.starters]);
+  }, [problem.id, selectedLang, getSavedCode, savedCode, detail, problem.starters, onSaveCode, onSaveNotes]);
 
+  // Sync notes when problem changes
   useEffect(() => {
     setUserNotes(notes);
-  }, [notes]);
+    currentNotesRef.current = notes;
+    isNotesLoadedRef.current = true;
+  }, [notes, problem.id]);
+
+  // Auto-save code on user keystrokes (debounced 350ms)
+  useEffect(() => {
+    if (!isCodeLoadedRef.current) return;
+    if (activeProblemIdRef.current !== problem.id || activeLangRef.current !== selectedLang) return;
+
+    setSaveStatus('saving');
+    const timer = setTimeout(() => {
+      onSaveCode(selectedLang, code);
+      setSaveStatus('saved');
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [code, selectedLang, problem.id, onSaveCode]);
+
+  // Auto-save notes on user keystrokes (debounced 350ms)
+  useEffect(() => {
+    if (!isNotesLoadedRef.current) return;
+    if (activeProblemIdRef.current !== problem.id) return;
+
+    setSaveStatus('saving');
+    const timer = setTimeout(() => {
+      onSaveNotes(userNotes);
+      setSaveStatus('saved');
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [userNotes, problem.id, onSaveNotes]);
 
   // Close on Escape
   useEffect(() => {
@@ -197,6 +272,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
   const handleSave = () => {
     onSaveCode(selectedLang, code);
     onSaveNotes(userNotes);
+    setSaveStatus('saved');
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2000);
   };
@@ -1139,13 +1215,28 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                     </p>
                   </div>
 
-                  <button
-                    onClick={handleSave}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[#ea763f] hover:bg-[#d9622b] text-white rounded-lg transition-colors cursor-pointer font-medium"
-                  >
-                    <Save className="w-3.5 h-3.5" />
-                    <span>{isSaved ? 'Saved!' : 'Save Notes'}</span>
-                  </button>
+                  <div className="flex items-center gap-2.5">
+                    <span 
+                      className={`text-xs flex items-center gap-1.5 font-mono px-2 py-1 rounded-md border transition-all ${
+                        saveStatus === 'saving' 
+                          ? 'text-amber-700 bg-amber-50 border-amber-200' 
+                          : 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                      }`}
+                      title="Changes are automatically persisted to IndexedDB & local storage"
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${
+                        saveStatus === 'saving' ? 'bg-amber-500 animate-ping' : 'bg-emerald-500'
+                      }`}></span>
+                      <span>{saveStatus === 'saving' ? 'Saving...' : 'Auto-saved locally'}</span>
+                    </span>
+                    <button
+                      onClick={handleSave}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[#ea763f] hover:bg-[#d9622b] text-white rounded-lg transition-colors cursor-pointer font-medium shadow-xs"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>{isSaved ? 'Saved!' : 'Save Notes'}</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Quick snippet buttons */}
@@ -1334,10 +1425,22 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               </button>
             </div>
 
-            <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
-              <span>UTF-8</span>
-              <span>•</span>
-              <span className="uppercase">{selectedLang}</span>
+            <div className="flex items-center gap-2.5 text-[11px] font-mono">
+              <span 
+                className={`flex items-center gap-1 font-medium transition-colors ${
+                  saveStatus === 'saving' ? 'text-amber-600' : 'text-emerald-600'
+                }`}
+                title="Continuous Auto-Save: Every keystroke is immediately persisted to local IndexedDB & storage."
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${
+                  saveStatus === 'saving' ? 'bg-amber-500 animate-ping' : 'bg-emerald-500'
+                }`}></span>
+                <span>{saveStatus === 'saving' ? 'Saving...' : 'Auto-saved'}</span>
+              </span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-500">UTF-8</span>
+              <span className="text-slate-300">•</span>
+              <span className="uppercase text-slate-500 font-semibold">{selectedLang}</span>
             </div>
           </div>
 

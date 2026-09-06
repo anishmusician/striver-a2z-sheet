@@ -12,7 +12,7 @@ import { AuthModal } from './components/AuthModal';
 import { LoginPage } from './components/LoginPage';
 import { authService, type AuthUser } from './services/authService';
 import { RightSidebar } from './components/RightSidebar';
-import { LogOut, RotateCcw, Upload, Cloud, CloudOff, RefreshCw, Flame, Sparkles } from 'lucide-react';
+import { LogOut, RotateCcw, Upload, Download, Cloud, CloudOff, RefreshCw, Flame, Sparkles, ShieldCheck } from 'lucide-react';
 
 const sheetData = sheetDataRaw as SheetData;
 
@@ -350,6 +350,20 @@ export function App() {
                       <span>Reset</span>
                     </button>
 
+                    {/* Download Progress Backup Button */}
+                    <button
+                      onClick={() => {
+                        exportProgress();
+                        setToastMessage('Complete backup (Anish & Tanisha) downloaded successfully!');
+                        setTimeout(() => setToastMessage(null), 3000);
+                      }}
+                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-emerald-50/60 hover:border-emerald-300 text-xs text-slate-700 hover:text-emerald-800 transition-colors cursor-pointer shadow-xs"
+                      title="Download Progress Backup (JSON) - Preserves Anish and Tanisha"
+                    >
+                      <Download className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Backup</span>
+                    </button>
+
                     {/* Import Progress Button */}
                     <button
                       onClick={() => fileInputRef.current?.click()}
@@ -425,6 +439,37 @@ export function App() {
                       Last updated : December 13, 2025
                     </span>
                   </div>
+                </div>
+
+                {/* Permanent Storage Active (IndexedDB + Eviction Protection) Banner */}
+                <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-3.5 py-2.5 bg-emerald-50/90 border border-emerald-200 rounded-xl shadow-xs">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="relative flex h-2.5 w-2.5 shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2 min-w-0">
+                      <span className="text-xs font-bold text-emerald-900 tracking-tight">
+                        Permanent Storage Active (IndexedDB + Eviction Protection)
+                      </span>
+                      <span className="text-[11px] text-emerald-800/80 hidden lg:inline">
+                        • All solved problems, code solutions, revision notes, and streaks for both Anish and Tanisha are permanently preserved.
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      exportProgress();
+                      setToastMessage('Complete backup (Anish & Tanisha) downloaded successfully!');
+                      setTimeout(() => setToastMessage(null), 3000);
+                    }}
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white hover:bg-emerald-100/70 text-emerald-900 border border-emerald-300 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs shrink-0 hover:scale-[1.02] active:scale-95"
+                    title="Download Progress Backup (JSON) - Preserves Anish and Tanisha"
+                  >
+                    <span>💾 Download Progress Backup (JSON)</span>
+                  </button>
                 </div>
 
               {/* Subtitle & Know More */}

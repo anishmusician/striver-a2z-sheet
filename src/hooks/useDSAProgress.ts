@@ -755,11 +755,11 @@ export const useDSAProgress = () => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(storage, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `dsa_${currentProfile.username}_backup_${getTodayString()}.json`);
+    downloadAnchor.setAttribute('download', `strivers-a2z-all-progress-backup-${getTodayString()}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-  }, [storage, currentProfile.username]);
+  }, [storage]);
 
   const importProgress = useCallback((jsonStr: string): { success: boolean; message: string } => {
     try {
