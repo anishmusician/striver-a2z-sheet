@@ -11,7 +11,6 @@ import { VideoModal } from './components/VideoModal';
 import { AuthModal } from './components/AuthModal';
 import { LoginPage } from './components/LoginPage';
 import { authService, type AuthUser } from './services/authService';
-import { ThemeToggle } from './components/ThemeToggle';
 import { RightSidebar } from './components/RightSidebar';
 import { LogOut, RotateCcw, Upload } from 'lucide-react';
 
@@ -298,7 +297,7 @@ export function App() {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white dark:bg-[#1f1f20] border border-slate-200 dark:border-zinc-700 text-slate-900 dark:text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-sm animate-fadeIn">
+        <div className="fixed bottom-6 right-6 z-50 bg-white border border-slate-200 text-slate-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-sm animate-fadeIn">
           <span>{toastMessage}</span>
         </div>
       )}
@@ -322,17 +321,14 @@ export function App() {
             <div className="px-1 md:px-0 mb-4">
               <div className="w-full flex flex-col justify-start items-start gap-2">
                 <div className="w-full flex items-center justify-between gap-3 pt-0">
-                  <h1 className="text-lg md:text-2xl font-bold font-firaSans leading-tight text-[var(--base-text-primary)]">
+                  <h1 className="text-lg md:text-2xl font-bold font-firaSans leading-tight text-slate-900">
                     Striver&apos;s A2Z Sheet - Learn DSA from A to Z
                   </h1>
                   <div className="flex items-center gap-2 sm:gap-2.5 justify-end w-fit">
-                    {/* Theme Switcher Toggle */}
-                    <ThemeToggle variant="switch" />
-
                     {/* Reset Progress Button */}
                     <button
                       onClick={resetProgress}
-                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-xs text-[var(--base-text-muted)] hover:text-[var(--base-text-primary)] transition-colors cursor-pointer shadow-xs"
+                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs text-slate-600 hover:text-slate-900 transition-colors cursor-pointer shadow-xs"
                       title="Reset Progress"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
@@ -342,7 +338,7 @@ export function App() {
                     {/* Import Progress Button */}
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-xs text-[var(--base-text-muted)] hover:text-[var(--base-text-primary)] transition-colors cursor-pointer shadow-xs"
+                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs text-slate-600 hover:text-slate-900 transition-colors cursor-pointer shadow-xs"
                       title="Import Progress"
                     >
                       <Upload className="w-3.5 h-3.5" />
@@ -352,15 +348,15 @@ export function App() {
                     {/* User Profile / Learner Account Pill */}
                     <button
                       onClick={() => setShowAuthModal(true)}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-xs text-zinc-700 dark:text-zinc-200 transition-colors cursor-pointer shadow-xs"
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs text-slate-700 transition-colors cursor-pointer shadow-xs"
                       title="Switch Learner Profile / Learn with Friend"
                     >
                       <div className={`w-5 h-5 rounded-md bg-gradient-to-tr ${currentProfile.avatarColor} flex items-center justify-center text-[10px] font-bold text-white shadow-xs`}>
                         {currentProfile.name.charAt(0).toUpperCase()}
                       </div>
-                      <span className="font-semibold text-zinc-900 dark:text-white">{currentProfile.name}</span>
-                      <span className="text-zinc-400 dark:text-zinc-500 font-mono hidden sm:inline">@{currentProfile.username}</span>
-                      <span className="text-[10px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-200 dark:border-orange-500/20 hidden md:inline">
+                      <span className="font-semibold text-slate-900">{currentProfile.name}</span>
+                      <span className="text-slate-400 font-mono hidden sm:inline">@{currentProfile.username}</span>
+                      <span className="text-[10px] font-semibold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded border border-orange-200 hidden md:inline">
                         Learn Together
                       </span>
                     </button>
@@ -368,14 +364,14 @@ export function App() {
                     {/* Log Out Button */}
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-rose-500/10 hover:border-rose-500/30 text-xs text-zinc-500 dark:text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors cursor-pointer shadow-xs"
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-200 text-xs text-slate-500 hover:text-rose-600 transition-colors cursor-pointer shadow-xs"
                       title="Log Out of Dedicated Session"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       <span className="hidden sm:inline">Log Out</span>
                     </button>
 
-                    <span className="hidden md:inline-flex shrink-0 items-center rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] px-3 py-1.5 text-xs text-[var(--base-text-muted)] shadow-xs">
+                    <span className="hidden md:inline-flex shrink-0 items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-500 shadow-xs">
                       Last updated : December 13, 2025
                     </span>
                   </div>
@@ -383,12 +379,12 @@ export function App() {
 
               {/* Subtitle & Know More */}
               <div className="self-stretch justify-start text-sm">
-                <span className="text-[var(--base-text-muted)] font-normal font-firaSans leading-tight">
+                <span className="text-slate-600 font-normal font-firaSans leading-tight">
                   This course is made for people who want to learn DSA from A to Z for free in a well-organised and structured manner.
                 </span>{' '}
                 <button
                   onClick={() => setShowKnowMore(prev => !prev)}
-                  className="text-[var(--brand)] font-normal font-firaSans leading-tight hover:underline cursor-pointer"
+                  className="text-orange-600 font-medium font-firaSans leading-tight hover:underline cursor-pointer"
                 >
                   {showKnowMore ? 'Show less' : 'Know more'}
                 </button>
@@ -396,19 +392,19 @@ export function App() {
 
               {/* Collapsible Know More Info */}
               {showKnowMore && (
-                <div className="w-full p-4 mt-2 rounded-xl bg-[var(--surface-1)] border border-[var(--surface-border-muted)] text-xs text-zinc-300 space-y-2 animate-fadeIn">
-                  <p className="font-semibold text-white">Why use this 100% Free Clone?</p>
+                <div className="w-full p-4 mt-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 space-y-2 shadow-xs animate-fadeIn">
+                  <p className="font-bold text-slate-900">Why use this 100% Free Clone?</p>
                   <p>
-                    • <strong>Zero Credits &amp; No Login:</strong> Practice all 474 problems freely with no paywalls or gated compilers.
+                    • <strong className="text-slate-900">Zero Credits &amp; No Login:</strong> Practice all 474 problems freely with no paywalls or gated compilers.
                   </p>
                   <p>
-                    • <strong>Direct Practice Links:</strong> Instant 1-click links to LeetCode, GeeksforGeeks, and Coding Ninjas.
+                    • <strong className="text-slate-900">Direct Practice Links:</strong> Instant 1-click links to LeetCode, GeeksforGeeks, and Coding Ninjas.
                   </p>
                   <p>
-                    • <strong>In-Browser Code Runner:</strong> Run Python &amp; JavaScript locally in your browser with zero latency.
+                    • <strong className="text-slate-900">In-Browser Code Runner:</strong> Run Python &amp; JavaScript locally in your browser with zero latency.
                   </p>
                   <p>
-                    • <strong>Privacy &amp; Data Ownership:</strong> Your progress, code, and notes are saved directly in your browser. Export or restore anytime via JSON backup.
+                    • <strong className="text-slate-900">Privacy &amp; Data Ownership:</strong> Your progress, code, and notes are saved directly in your browser. Export or restore anytime via JSON backup.
                   </p>
                 </div>
               )}
@@ -444,9 +440,9 @@ export function App() {
               onOpenVideo={(url, title) => setActiveVideo({ url, title })}
             />
           ) : (
-            <div className="bg-[var(--surface-1)] border border-[var(--surface-border-muted)] rounded-xl p-12 text-center my-4">
-              <p className="text-zinc-300 font-medium mb-1">No problems found.</p>
-              <p className="text-xs text-zinc-500 mb-4">Try clearing your search query or filters.</p>
+            <div className="bg-white border border-slate-200 rounded-xl p-12 text-center my-4 shadow-xs">
+              <p className="text-slate-900 font-semibold mb-1">No problems found.</p>
+              <p className="text-xs text-slate-500 mb-4">Try clearing your search query or filters.</p>
               <button
                 onClick={() => {
                   setSearchQuery('');
@@ -454,7 +450,7 @@ export function App() {
                   setSelectedDifficulty('all');
                   setActiveTab('all');
                 }}
-                className="px-4 py-2 bg-[var(--brand)] hover:bg-[var(--brand-hover)] text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs"
               >
                 Reset Filters
               </button>

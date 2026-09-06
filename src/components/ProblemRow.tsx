@@ -31,17 +31,17 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
   const isSolved = status === 'solved';
 
   const difficultyBadge = {
-    Easy: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-    Medium: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-    Hard: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
-  }[problem.difficulty] || 'text-slate-400 bg-slate-800 border-slate-700';
+    Easy: 'text-emerald-700 bg-emerald-50 border-emerald-200',
+    Medium: 'text-amber-700 bg-amber-50 border-amber-200',
+    Hard: 'text-rose-700 bg-rose-50 border-rose-200',
+  }[problem.difficulty] || 'text-slate-700 bg-slate-100 border-slate-200';
 
   return (
     <div 
-      className={`group flex items-center justify-between px-4 py-3 border-b border-slate-800/60 transition-colors ${
+      className={`group flex items-center justify-between px-4 py-3 border-b border-slate-200/80 transition-colors ${
         isSolved 
-          ? 'bg-slate-900/30 hover:bg-slate-900/50' 
-          : 'hover:bg-slate-800/40 bg-slate-950/40'
+          ? 'bg-emerald-50/40 hover:bg-emerald-50/60' 
+          : 'hover:bg-orange-50/50 bg-white'
       }`}
     >
       {/* Left side: Checkbox, Star, Title, Indicators */}
@@ -51,8 +51,8 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
           onClick={onToggleSolved}
           className={`w-5 h-5 rounded-md flex items-center justify-center transition-all cursor-pointer border ${
             isSolved
-              ? 'bg-emerald-600 border-emerald-500 text-white shadow-sm shadow-emerald-500/20'
-              : 'border-slate-700 hover:border-slate-500 bg-slate-900/80 text-transparent'
+              ? 'bg-orange-600 border-orange-600 text-white shadow-xs'
+              : 'border-slate-300 hover:border-orange-500 bg-white text-transparent'
           }`}
           title={isSolved ? 'Mark as unsolved' : 'Mark as solved'}
         >
@@ -81,8 +81,8 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
         <div className="min-w-0 flex-1 flex items-center gap-2">
           <button
             onClick={onOpenWorkspace}
-            className={`text-left text-sm font-medium transition-colors hover:text-sky-400 truncate cursor-pointer ${
-              isSolved ? 'text-slate-400 line-through decoration-slate-600' : 'text-slate-200'
+            className={`text-left text-sm font-medium transition-colors hover:text-orange-600 truncate cursor-pointer ${
+              isSolved ? 'text-slate-400 line-through decoration-slate-400' : 'text-slate-900'
             }`}
           >
             {problem.title}
@@ -91,7 +91,7 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
           {/* Indicators for user's notes and code */}
           {hasNotes && (
             <span 
-              className="shrink-0 text-sky-400 p-0.5" 
+              className="shrink-0 text-purple-600 p-0.5" 
               title="Has personal notes"
             >
               <FileText className="w-3.5 h-3.5" />
@@ -99,7 +99,7 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
           )}
           {hasSavedCode && (
             <span 
-              className="shrink-0 text-emerald-400 p-0.5" 
+              className="shrink-0 text-emerald-600 p-0.5" 
               title="Has saved code solution"
             >
               <Code2 className="w-3.5 h-3.5" />
@@ -121,7 +121,7 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
           {problem.youtube && (
             <button
               onClick={() => onOpenVideo(problem.youtube!, problem.title)}
-              className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
               title="Watch Video Solution"
             >
               <Video className="w-4 h-4" />
@@ -134,7 +134,7 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
               href={problem.leetcode}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors"
+              className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
               title="Solve on LeetCode"
             >
               <span className="font-bold text-xs tracking-tighter">LC</span>
@@ -147,7 +147,7 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
               href={problem.gfg}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
+              className="p-1.5 text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
               title="Solve on GeeksforGeeks"
             >
               <span className="font-bold text-xs tracking-tighter">GFG</span>
@@ -160,7 +160,7 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
               href={problem.article}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 text-slate-400 hover:text-sky-400 hover:bg-sky-500/10 rounded-lg transition-colors"
+              className="p-1.5 text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
               title="Read takeUforward Article"
             >
               <BookOpen className="w-4 h-4" />
@@ -170,7 +170,7 @@ export const ProblemRow: React.FC<ProblemRowProps> = ({
           {/* Code Workspace */}
           <button
             onClick={onOpenWorkspace}
-            className="flex items-center gap-1 px-2 py-1 text-xs text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 rounded-lg transition-colors cursor-pointer font-medium ml-1"
+            className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 rounded-lg transition-colors cursor-pointer ml-1 shadow-xs"
             title="Open Code &amp; Notes Workspace"
           >
             <Code2 className="w-3.5 h-3.5" />

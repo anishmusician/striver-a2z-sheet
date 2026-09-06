@@ -1,7 +1,6 @@
 import React from 'react';
 import { House, FileText, Flame, LogOut } from 'lucide-react';
 import type { UserProfile } from '../types/dsa';
-import { ThemeToggle } from './ThemeToggle';
 
 interface SidebarProps {
   streak: number;
@@ -20,7 +19,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onLogout,
 }) => {
   return (
-    <aside className="hidden lg:flex flex-col justify-between w-[74px] h-screen sticky top-0 bg-[var(--sidebar-dark)] border-r border-[var(--border)] py-3 px-2 z-30 shrink-0 select-none shadow-xs">
+    <aside className="hidden lg:flex flex-col justify-between w-[74px] h-screen sticky top-0 bg-white border-r border-slate-200/80 py-3 px-2 z-30 shrink-0 select-none shadow-xs">
       {/* Top section: Logo & Nav items */}
       <div className="flex flex-col items-center w-full">
         {/* takeUforward Official Logo */}
@@ -38,31 +37,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Separator */}
-        <div className="w-8 h-[1px] bg-[var(--border)] my-2"></div>
+        <div className="w-8 h-[1px] bg-slate-200 my-2"></div>
 
         {/* Nav list */}
         <nav className="flex flex-col items-center gap-2 w-full mt-1">
           {/* Home */}
           <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-zinc-400 hover:text-orange-600 dark:hover:text-white hover:bg-orange-500/10 dark:hover:bg-zinc-800/60 transition-colors group cursor-pointer"
+            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-slate-500 hover:text-orange-600 hover:bg-orange-50 transition-colors group cursor-pointer"
             title="Home"
           >
             <House className="w-5 h-5 mb-0.5" />
-            <span className="text-[10px] font-medium leading-none text-zinc-500 dark:text-zinc-400 group-hover:text-orange-600 dark:group-hover:text-white">Home</span>
+            <span className="text-[10px] font-medium leading-none text-slate-500 group-hover:text-orange-600">Home</span>
           </button>
 
           {/* Plus */}
           <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-zinc-400 hover:text-[var(--brand)] hover:bg-orange-500/10 dark:hover:bg-zinc-800/60 transition-colors group cursor-pointer"
+            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-slate-500 hover:text-orange-600 hover:bg-orange-50 transition-colors group cursor-pointer"
             title="Plus (Unlocked)"
           >
-            <span className="font-bold text-sm leading-none text-[var(--brand)] mb-0.5">+</span>
-            <span className="text-[10px] font-medium leading-none text-zinc-500 dark:text-zinc-400 group-hover:text-[var(--brand)]">Plus</span>
+            <span className="font-bold text-sm leading-none text-orange-600 mb-0.5">+</span>
+            <span className="text-[10px] font-medium leading-none text-slate-500 group-hover:text-orange-600">Plus</span>
           </button>
 
           {/* Sheet (Active) */}
           <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-[#ea763f] bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 shadow-2xs transition-colors cursor-pointer"
+            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-orange-600 bg-orange-50 border border-orange-200/90 shadow-xs transition-colors cursor-pointer"
             title="Striver's A2Z Sheet"
           >
             <FileText className="w-5 h-5 mb-0.5 stroke-[2.2]" />
@@ -71,29 +70,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      {/* Bottom section: Streak, Backup, Reset */}
+      {/* Bottom section: Streak, Profile, Logout */}
       <div className="flex flex-col items-center gap-2.5 w-full pb-3">
         {/* Streak */}
         <div 
-          className="flex flex-col items-center justify-center w-11 py-1 rounded-xl bg-orange-500/10 border border-orange-500/25 text-orange-500 dark:text-orange-400 shadow-2xs"
+          className="flex flex-col items-center justify-center w-11 py-1 rounded-xl bg-orange-50 border border-orange-200/90 text-orange-600 shadow-xs"
           title={`${streak} Days Streak`}
         >
-          <Flame className="w-4 h-4 fill-orange-500 dark:fill-orange-400" />
+          <Flame className="w-4 h-4 fill-orange-500" />
           <span className="text-[10px] font-bold font-mono mt-0.5">{streak}d</span>
         </div>
 
-        {/* Theme Toggle Button */}
-        <div className="my-0.5">
-          <ThemeToggle variant="icon" />
-        </div>
-
-        {/* User profile avatar button - Circular outline matching takeUforward screenshot */}
+        {/* User profile avatar button */}
         <button
           onClick={onOpenAuth}
-          className="w-9 h-9 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:border-orange-500 hover:text-orange-600 transition-all cursor-pointer shadow-2xs group"
+          className="w-9 h-9 rounded-full border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-600 hover:border-orange-500 hover:bg-orange-50 transition-all cursor-pointer shadow-xs group"
           title={`${currentProfile?.name || 'User'} (@${currentProfile?.username || 'user'}) - Click to switch profile / learn with friend`}
         >
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-400 to-amber-500 flex items-center justify-center text-[10px] font-bold text-white shadow-2xs">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-400 to-amber-500 flex items-center justify-center text-[10px] font-bold text-white shadow-xs">
             {currentProfile?.name?.charAt(0).toUpperCase() || 'A'}
           </div>
         </button>
@@ -102,7 +96,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {onLogout && (
           <button
             onClick={onLogout}
-            className="p-1 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
             title="Log Out of Dedicated Session"
           >
             <LogOut className="w-3.5 h-3.5" />

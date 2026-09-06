@@ -4,12 +4,15 @@ import {
   BookOpen, Video, FileText, Star, Sparkles, Terminal,
   ChevronLeft, ChevronRight, ChevronDown, Maximize2, Minimize2, Lightbulb,
   CheckCircle2, XCircle, AlertTriangle, Send, History,
-  ThumbsUp, ThumbsDown, Clock, MessageSquare, FileEdit
+  ThumbsUp, ThumbsDown, Clock, MessageSquare, FileEdit, Code2
 } from 'lucide-react';
 import type { Problem, Language, ProblemStatus, SubmissionRecord } from '../types/dsa';
 import { getProblemDetail } from '../data/problemsData';
 import { validateJavaCode } from '../services/javaValidator';
-import { ThemeToggle } from './ThemeToggle';
+import Editor, { loader } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
+
+loader.config({ monaco });
 
 interface ProblemWorkspaceProps {
   problem: Problem;
@@ -133,7 +136,8 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [expandedHints, setExpandedHints] = useState<Record<number, boolean>>({});
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<any>(null);
+  const [editorTheme, setEditorTheme] = useState<'vs-code-vibrant-dark' | 'vs-code-vibrant-light'>('vs-code-vibrant-dark');
 
   // Initialize starters and saved code per language
   useEffect(() => {
@@ -194,26 +198,100 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
     setExpandedHints(prev => ({ ...prev, [idx]: !prev[idx] }));
   };
 
-  // Keyboard navigation & editor tab handling
-  const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      const target = e.currentTarget;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
-      const value = target.value;
-
-      target.value = value.substring(0, start) + '    ' + value.substring(end);
-      target.selectionStart = target.selectionEnd = start + 4;
-      setCode(target.value);
-    } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      runCode();
-    } else if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-      e.preventDefault();
-      handleSave();
+  const monacoLanguage = useMemo(() => {
+    switch (selectedLang) {
+      case 'java': return 'java';
+      case 'python': return 'python';
+      case 'cpp': return 'cpp';
+      case 'javascript': return 'javascript';
+      default: return 'java';
     }
+  }, [selectedLang]);
+
+  const activeFileName = useMemo(() => {
+    switch (selectedLang) {
+      case 'java': return 'Solution.java';
+      case 'python': return 'solution.py';
+      case 'cpp': return 'solution.cpp';
+      case 'javascript': return 'solution.js';
+      default: return 'Solution.java';
+    }
+  }, [selectedLang]);
+
+  const handleEditorDidMount = (editor: any, monacoInstance: typeof monaco) => {
+    editorRef.current = editor;
+
+    // Custom ultra-vibrant VS Code Dark Theme
+    monacoInstance.editor.defineTheme('vs-code-vibrant-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [
+        { token: 'keyword', foreground: 'c678dd', fontStyle: 'bold' },
+        { token: 'storage', foreground: 'c678dd', fontStyle: 'bold' },
+        { token: 'type', foreground: '4ec9b0' },
+        { token: 'class', foreground: '4ec9b0', fontStyle: 'bold' },
+        { token: 'function', foreground: '61afef' },
+        { token: 'string', foreground: '98c379' },
+        { token: 'number', foreground: 'd19a66' },
+        { token: 'comment', foreground: '7f848e', fontStyle: 'italic' },
+        { token: 'variable', foreground: 'e06c75' },
+        { token: 'operator', foreground: '56b6c2' },
+      ],
+      colors: {
+        'editor.background': '#18181b',
+        'editor.foreground': '#abb2bf',
+        'editorLineNumber.foreground': '#5c6370',
+        'editorLineNumber.activeForeground': '#ea763f',
+        'editor.lineHighlightBackground': '#27272a40',
+        'editorCursor.foreground': '#ea763f',
+        'editorBracketMatch.background': '#3b82f630',
+        'editorBracketMatch.border': '#3b82f6',
+      },
+    });
+
+    // Custom ultra-vibrant VS Code Light Theme
+    monacoInstance.editor.defineTheme('vs-code-vibrant-light', {
+      base: 'vs',
+      inherit: true,
+      rules: [
+        { token: 'keyword', foreground: 'af52de', fontStyle: 'bold' },
+        { token: 'storage', foreground: 'af52de', fontStyle: 'bold' },
+        { token: 'type', foreground: '0284c7' },
+        { token: 'class', foreground: '0284c7', fontStyle: 'bold' },
+        { token: 'function', foreground: 'd97706' },
+        { token: 'string', foreground: '16a34a' },
+        { token: 'number', foreground: 'ea580c' },
+        { token: 'comment', foreground: '64748b', fontStyle: 'italic' },
+        { token: 'variable', foreground: 'dc2626' },
+        { token: 'operator', foreground: '0891b2' },
+      ],
+      colors: {
+        'editor.background': '#ffffff',
+        'editor.foreground': '#0f172a',
+        'editorLineNumber.foreground': '#94a3b8',
+        'editorLineNumber.activeForeground': '#ea580c',
+        'editor.lineHighlightBackground': '#f8fafc',
+        'editorCursor.foreground': '#ea580c',
+        'editorBracketMatch.background': '#fed7aa40',
+        'editorBracketMatch.border': '#ea580c',
+      },
+    });
+
+    monacoInstance.editor.setTheme(editorTheme);
+
+    editor.addCommand(monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.Enter, () => {
+      runCode();
+    });
+    editor.addCommand(monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.KeyS, () => {
+      handleSave();
+    });
   };
+
+  useEffect(() => {
+    if (editorRef.current) {
+      monaco.editor.setTheme(editorTheme);
+    }
+  }, [editorTheme]);
 
   // Extract testcases
   const testcases = detail?.testcases && detail.testcases.length > 0
@@ -455,28 +533,23 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
   };
 
   const difficultyColors = {
-    Easy: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30',
-    Medium: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
-    Hard: 'text-rose-400 bg-rose-500/10 border-rose-500/30',
+    Easy: 'text-emerald-700 bg-emerald-50 border-emerald-200',
+    Medium: 'text-amber-700 bg-amber-50 border-amber-200',
+    Hard: 'text-rose-700 bg-rose-50 border-rose-200',
   };
 
-  // Line count for code gutter
-  const lineCount = useMemo(() => {
-    return (code.match(/\n/g) || []).length + 1;
-  }, [code]);
-
   return (
-    <div className={`fixed inset-0 z-50 flex flex-col bg-[#09090b] text-[#f8fafc] font-firaSans overflow-hidden select-none ${isFullscreen ? 'p-0' : ''}`}>
+    <div className={`fixed inset-0 z-50 flex flex-col bg-slate-50 text-slate-900 font-firaSans overflow-hidden select-none ${isFullscreen ? 'p-0' : ''}`}>
       {/* Lightbox Image Modal */}
       {lightboxImage && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md cursor-zoom-out animate-fadeIn"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md cursor-zoom-out animate-fadeIn"
           onClick={() => setLightboxImage(null)}
         >
-          <div className="relative max-w-5xl max-h-[90vh] overflow-auto rounded-2xl border border-zinc-700 bg-zinc-950 p-2 shadow-2xl">
+          <div className="relative max-w-5xl max-h-[90vh] overflow-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl">
             <button
               onClick={() => setLightboxImage(null)}
-              className="absolute top-3 right-3 p-2 text-zinc-400 hover:text-white bg-black/60 rounded-full hover:bg-black transition-colors"
+              className="absolute top-3 right-3 p-2 text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -485,28 +558,28 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
         </div>
       )}
 
-      {/* TOP HEADER BAR (Exact 1:1 takeUforward Header) */}
-      <header className="h-14 bg-[#121214] border-b border-[#232326] px-4 flex items-center justify-between gap-3 shrink-0">
+      {/* TOP HEADER BAR (Clean, Pure White, High Contrast) */}
+      <header className="h-14 bg-white border-b border-slate-200 px-4 flex items-center justify-between gap-3 shrink-0 shadow-2xs">
         {/* Left: Navigation & Problem Title */}
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={onClose}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-300 hover:text-white bg-[#1c1c1f] hover:bg-[#27272a] border border-white/5 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
             title="Return to A2Z Sheet (Esc)"
           >
             <ChevronLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Sheet</span>
           </button>
 
-          <div className="h-4 w-px bg-zinc-800 hidden sm:block" />
+          <div className="h-4 w-px bg-slate-200 hidden sm:block" />
 
           {/* Problem Index & Title */}
           <div className="flex items-center gap-2 min-w-0">
-            <span className={`text-xs px-2.5 py-0.5 rounded-full border font-medium ${difficultyColors[problem.difficulty]}`}>
+            <span className={`text-xs px-2.5 py-0.5 rounded-full border font-semibold ${difficultyColors[problem.difficulty]}`}>
               {problem.difficulty}
             </span>
 
-            <h1 className="text-sm sm:text-base font-bold text-zinc-100 truncate">
+            <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
               {currentIndex >= 0 ? `${currentIndex + 1}. ` : ''}{detail?.name || problem.title}
             </h1>
 
@@ -514,33 +587,33 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
             <button
               onClick={onToggleStarred}
               className={`p-1 rounded-md transition-colors cursor-pointer ${
-                isStarred ? 'text-amber-400 bg-amber-400/10' : 'text-zinc-500 hover:text-amber-400 hover:bg-zinc-800'
+                isStarred ? 'text-amber-500 bg-amber-50' : 'text-slate-400 hover:text-amber-500 hover:bg-slate-100'
               }`}
               title={isStarred ? 'Starred for revision' : 'Star for revision'}
             >
-              <Star className={`w-4 h-4 ${isStarred ? 'fill-amber-400' : ''}`} />
+              <Star className={`w-4 h-4 ${isStarred ? 'fill-amber-500' : ''}`} />
             </button>
           </div>
         </div>
 
         {/* Center: Prev / Next Switcher */}
-        <div className="hidden md:flex items-center gap-1 bg-[#1a1a1d] border border-white/5 rounded-lg p-0.5">
+        <div className="hidden md:flex items-center gap-1 bg-slate-100 border border-slate-200 rounded-lg p-0.5">
           <button
             disabled={!prevProblem}
             onClick={() => prevProblem && onNavigateProblem(prevProblem)}
-            className="flex items-center gap-1 px-2.5 py-1 text-xs text-zinc-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#252529] rounded transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1 text-xs text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white rounded transition-colors"
             title="Previous Problem"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
             <span>Prev</span>
           </button>
-          <span className="text-[11px] text-zinc-500 font-mono px-1">
+          <span className="text-[11px] text-slate-500 font-mono px-1">
             {currentIndex + 1} / {allProblems.length}
           </span>
           <button
             disabled={!nextProblem}
             onClick={() => nextProblem && onNavigateProblem(nextProblem)}
-            className="flex items-center gap-1 px-2.5 py-1 text-xs text-zinc-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#252529] rounded transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1 text-xs text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white rounded transition-colors"
             title="Next Problem"
           >
             <span>Next</span>
@@ -554,14 +627,14 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
           <select
             value={status}
             onChange={e => onStatusChange(e.target.value as ProblemStatus)}
-            className={`text-xs rounded-lg px-2.5 py-1.5 font-medium border cursor-pointer focus:outline-none ${
+            className={`text-xs rounded-lg px-2.5 py-1.5 font-semibold border cursor-pointer focus:outline-none shadow-2xs ${
               status === 'solved'
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
                 : status === 'in_progress'
-                ? 'bg-sky-500/10 text-sky-400 border-sky-500/30'
+                ? 'bg-sky-50 text-sky-700 border-sky-300'
                 : status === 'revision'
-                ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                : 'bg-[#1c1c1f] text-zinc-400 border-zinc-700'
+                ? 'bg-amber-50 text-amber-700 border-amber-300'
+                : 'bg-slate-100 text-slate-700 border-slate-200'
             }`}
           >
             <option value="todo">To Do</option>
@@ -576,7 +649,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               href={problem.leetcode}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 transition-colors"
+              className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-colors shadow-2xs"
               title="Practice on LeetCode"
             >
               <span>LeetCode</span>
@@ -589,7 +662,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               href={problem.gfg}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors"
+              className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-2xs"
               title="Practice on GeeksforGeeks"
             >
               <span>GFG</span>
@@ -598,18 +671,15 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
           )}
 
           {/* Zero Credits Indicator */}
-          <span className="hidden sm:flex items-center gap-1 text-[11px] font-medium text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2 py-1 rounded-lg">
-            <Sparkles className="w-3 h-3" />
+          <span className="hidden sm:flex items-center gap-1 text-[11px] font-semibold text-orange-700 bg-orange-50 border border-orange-200 px-2 py-1 rounded-lg shadow-2xs">
+            <Sparkles className="w-3 h-3 text-orange-500" />
             <span>0 Credits Free</span>
           </span>
-
-          {/* Theme Switcher Toggle */}
-          <ThemeToggle variant="switch" />
 
           {/* Fullscreen Button */}
           <button
             onClick={() => setIsFullscreen(prev => !prev)}
-            className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
             title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -618,7 +688,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
             title="Close (Esc)"
           >
             <X className="w-4 h-4" />
@@ -629,18 +699,18 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
       {/* MAIN TWO-COLUMN WORKSPACE */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
         {/* LEFT COLUMN: Problem Details, Editorial, Submissions, Notes */}
-        <div className="w-full md:w-1/2 flex flex-col h-full border-b md:border-b-0 md:border-r border-zinc-200/80 dark:border-[#232326] bg-white dark:bg-[#0f0f11] min-w-0">
-          {/* Tab Header matching Image 2 */}
-          <div className="flex items-center px-4 bg-white dark:bg-[#141416] border-b border-zinc-200/80 dark:border-[#232326] text-xs font-medium shrink-0 overflow-x-auto gap-1">
+        <div className="w-full md:w-1/2 flex flex-col h-full border-b md:border-b-0 md:border-r border-slate-200 bg-white min-w-0">
+          {/* Tab Header */}
+          <div className="flex items-center px-4 bg-slate-50 border-b border-slate-200 text-xs font-semibold shrink-0 overflow-x-auto gap-1">
             <button
               onClick={() => setActiveLeftTab('description')}
               className={`flex items-center gap-2 py-3 px-3.5 border-b-2 transition-all cursor-pointer shrink-0 ${
                 activeLeftTab === 'description'
-                  ? 'text-[#d97706] border-[#d97706] font-semibold'
-                  : 'text-zinc-500 border-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
+                  ? 'text-orange-600 border-orange-500 font-bold bg-white'
+                  : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <FileText className="w-3.5 h-3.5 text-[#d97706]" />
+              <FileText className="w-3.5 h-3.5 text-orange-500" />
               <span>Description</span>
             </button>
 
@@ -648,11 +718,11 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               onClick={() => setActiveLeftTab('editorial')}
               className={`flex items-center gap-2 py-3 px-3.5 border-b-2 transition-all cursor-pointer shrink-0 ${
                 activeLeftTab === 'editorial'
-                  ? 'text-[#10b981] border-[#10b981] font-semibold'
-                  : 'text-zinc-500 border-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
+                  ? 'text-emerald-600 border-emerald-500 font-bold bg-white'
+                  : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5 text-[#10b981]" />
+              <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
               <span>Editorial</span>
             </button>
 
@@ -660,11 +730,11 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               onClick={() => setActiveLeftTab('submissions')}
               className={`flex items-center gap-2 py-3 px-3.5 border-b-2 transition-all cursor-pointer shrink-0 ${
                 activeLeftTab === 'submissions'
-                  ? 'text-[#3b82f6] border-[#3b82f6] font-semibold'
-                  : 'text-zinc-500 border-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
+                  ? 'text-sky-600 border-sky-500 font-bold bg-white'
+                  : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <Clock className="w-3.5 h-3.5 text-[#3b82f6]" />
+              <Clock className="w-3.5 h-3.5 text-sky-500" />
               <span>Submissions {submissions.length > 0 && `(${submissions.length})`}</span>
             </button>
 
@@ -672,11 +742,11 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               onClick={() => setActiveLeftTab('discussion')}
               className={`flex items-center gap-2 py-3 px-3.5 border-b-2 transition-all cursor-pointer shrink-0 ${
                 activeLeftTab === 'discussion'
-                  ? 'text-[#8b5cf6] border-[#8b5cf6] font-semibold'
-                  : 'text-zinc-500 border-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
+                  ? 'text-purple-600 border-purple-500 font-bold bg-white'
+                  : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <MessageSquare className="w-3.5 h-3.5 text-[#8b5cf6]" />
+              <MessageSquare className="w-3.5 h-3.5 text-purple-500" />
               <span>Discussion</span>
             </button>
 
@@ -684,36 +754,36 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               onClick={() => setActiveLeftTab('notes')}
               className={`flex items-center gap-2 py-3 px-3.5 border-b-2 transition-all cursor-pointer shrink-0 ${
                 activeLeftTab === 'notes'
-                  ? 'text-[#ea763f] border-[#ea763f] font-semibold'
-                  : 'text-zinc-500 border-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
+                  ? 'text-amber-600 border-amber-500 font-bold bg-white'
+                  : 'text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <FileEdit className="w-3.5 h-3.5 text-[#ea763f]" />
+              <FileEdit className="w-3.5 h-3.5 text-amber-500" />
               <span>Notes</span>
             </button>
           </div>
 
           {/* Left Tab Body */}
-          <div className="flex-1 overflow-y-auto p-5 sm:p-6 min-h-0 text-zinc-800 dark:text-zinc-200 text-sm leading-relaxed">
+          <div className="flex-1 overflow-y-auto p-5 sm:p-6 min-h-0 text-slate-800 text-sm leading-relaxed bg-white">
             {/* TAB 1: DESCRIPTION */}
             {activeLeftTab === 'description' && (
               <div className="space-y-6 max-w-3xl">
                 {/* Step Breadcrumbs */}
-                <div className="text-xs text-zinc-400 flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[#ea763f] font-medium">Step {problem.stepNo}</span>
+                <div className="text-xs text-slate-500 flex items-center gap-1.5 flex-wrap">
+                  <span className="text-orange-600 font-semibold">Step {problem.stepNo}</span>
                   <span>&gt;</span>
                   <span>{problem.stepTitle}</span>
                   <span>&gt;</span>
-                  <span className="text-zinc-500 dark:text-zinc-300">{problem.subStepTitle}</span>
+                  <span className="text-slate-700 font-medium">{problem.subStepTitle}</span>
                 </div>
 
-                {/* Problem Name & Badges matching Image 2 */}
+                {/* Problem Name & Badges */}
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white mb-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
                     {detail?.name || problem.title}
                   </h2>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <button className="text-xs font-semibold text-orange-600 bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 px-3 py-1 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-500/20 transition-colors cursor-pointer">
+                    <button className="text-xs font-semibold text-orange-700 bg-orange-50 border border-orange-200 px-3 py-1 rounded-lg hover:bg-orange-100 transition-colors cursor-pointer shadow-2xs">
                       Subscribe to TUF+
                     </button>
                     <button 
@@ -722,14 +792,14 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                           setExpandedHints({ 0: true });
                         }
                       }}
-                      className="text-xs font-medium text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-3 py-1 rounded-lg transition-colors cursor-pointer"
+                      className="text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-lg transition-colors cursor-pointer border border-slate-200"
                     >
-                      Hints
+                      Hints ({detail?.hints?.length || 0})
                     </button>
-                    <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-lg">
+                    <span className="text-xs font-medium text-slate-700 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
                       Company
                     </span>
-                    <span className={`text-xs px-2.5 py-0.5 rounded-full border font-medium ${difficultyColors[problem.difficulty]}`}>
+                    <span className={`text-xs px-2.5 py-0.5 rounded-full border font-semibold ${difficultyColors[problem.difficulty]}`}>
                       {problem.difficulty}
                     </span>
                   </div>
@@ -1175,40 +1245,64 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Code Studio & Execution Console */}
-        <div className="w-full md:w-1/2 flex flex-col h-full bg-white dark:bg-[#0d0d0e] min-w-0 border-l border-zinc-200/80 dark:border-[#232326]">
-          {/* Editor Top Toolbar matching Image 2 */}
-          <div className="h-12 px-4 bg-white dark:bg-[#141416] border-b border-zinc-200/80 dark:border-[#232326] flex items-center justify-between gap-3 shrink-0">
-            {/* Language Selector Dropdown Pill matching Image 2 */}
-            <div className="relative">
-              <select
-                value={selectedLang}
-                onChange={e => setSelectedLang(e.target.value as Language)}
-                className="h-8 pl-3 pr-7 text-xs font-semibold rounded-lg border border-zinc-200/80 dark:border-zinc-700 bg-[#f4f4f5] dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 appearance-none cursor-pointer focus:outline-none focus:border-orange-500 shadow-2xs"
+        {/* RIGHT COLUMN: Code Studio & Execution Console (Monaco VS Code Engine) */}
+        <div className="w-full md:w-1/2 flex flex-col h-full bg-white min-w-0 border-l border-slate-200">
+          {/* Editor Top Toolbar */}
+          <div className="h-12 px-4 bg-white border-b border-slate-200 flex items-center justify-between gap-3 shrink-0">
+            {/* Left: Language Selector Dropdown */}
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <select
+                  value={selectedLang}
+                  onChange={e => setSelectedLang(e.target.value as Language)}
+                  className="h-8 pl-3 pr-7 text-xs font-bold rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 appearance-none cursor-pointer focus:outline-none focus:border-orange-500 shadow-2xs"
+                >
+                  <option value="java">Java</option>
+                  <option value="python">Python</option>
+                  <option value="cpp">C++</option>
+                  <option value="javascript">JavaScript</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              {/* VS Code Theme Toggle */}
+              <button
+                onClick={() => setEditorTheme(t => t === 'vs-code-vibrant-dark' ? 'vs-code-vibrant-light' : 'vs-code-vibrant-dark')}
+                className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer shadow-2xs"
+                title="Toggle VS Code Editor Theme"
               >
-                <option value="java">Java</option>
-                <option value="python">Python</option>
-                <option value="cpp">C++</option>
-                <option value="javascript">JavaScript</option>
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <span>{editorTheme === 'vs-code-vibrant-dark' ? '🌙 VS Code Dark' : '☀️ VS Code Light'}</span>
+              </button>
             </div>
 
-            {/* Center/Right Actions: Timer, Format, Copy, Reset, Green Run */}
+            {/* Right: Timer, Format, Copy, Reset, Run, Submit */}
             <div className="flex items-center gap-2">
-              {/* Study Timer matching Image 2 */}
+              {/* Study Timer */}
               <div 
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono text-zinc-500 dark:text-zinc-400 bg-[#f4f4f5] dark:bg-zinc-800/80 border border-zinc-200/60 dark:border-zinc-700/60"
+                className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono text-slate-600 bg-slate-100 border border-slate-200"
                 title="Active Coding Session Timer"
               >
                 <Clock className="w-3.5 h-3.5 text-orange-500" />
                 <span>{formattedTimer}</span>
               </div>
 
-              {/* Reset to starter code */}
+              {/* Format Code */}
+              <button
+                onClick={() => {
+                  if (editorRef.current) {
+                    editorRef.current.getAction('editor.action.formatDocument')?.run();
+                  }
+                }}
+                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer font-mono font-bold text-xs"
+                title="Format Code (Alt+Shift+F)"
+              >
+                &lt;&nbsp;&gt;
+              </button>
+
+              {/* Reset Starter Code */}
               <button
                 onClick={handleResetCode}
-                className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
                 title="Reset Starter Code"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -1217,13 +1311,13 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               {/* Copy Code */}
               <button
                 onClick={handleCopyCode}
-                className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
                 title="Copy Code"
               >
                 {hasCopied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
               </button>
 
-              {/* Green Run Rocket Button matching Image 2 */}
+              {/* Green Run Rocket Button */}
               <button
                 onClick={runCode}
                 disabled={isRunning}
@@ -1247,58 +1341,73 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
             </div>
           </div>
 
-          {/* Tab bar matching Image 2: Tab-1 + */}
-          <div className="h-8 px-4 bg-[#f8fafc] dark:bg-[#121214] border-b border-zinc-200/80 dark:border-[#232326] flex items-center gap-1.5 text-xs shrink-0">
-            <div className="h-7 px-3 rounded-t-md bg-white dark:bg-[#0d0d0e] border-t border-x border-zinc-200/80 dark:border-zinc-800 font-medium text-zinc-800 dark:text-zinc-200 flex items-center gap-2 shadow-2xs">
-              <span>Tab-1</span>
-            </div>
-            <button className="h-6 w-6 rounded flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 cursor-pointer text-xs font-bold">
-              +
-            </button>
-          {/* Code Editor Body (with Line Numbers & Editor Toolbar Footer) */}
-          <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-[#0d0d0e] overflow-hidden relative">
-            <div className="flex-1 flex min-h-0 overflow-hidden">
-              {/* Line Gutter */}
-              <div 
-                className="w-12 bg-[#f8fafc] dark:bg-[#121214] text-zinc-400 dark:text-zinc-600 font-mono text-right pr-3 py-4 select-none border-r border-zinc-200/80 dark:border-white/5 overflow-hidden shrink-0"
-                style={{ fontSize: `${fontSize}px`, lineHeight: `${fontSize * 1.5}px` }}
-              >
-                {Array.from({ length: lineCount }, (_, i) => (
-                  <div key={i}>{i + 1}</div>
-                ))}
+          {/* Tab bar with authentic file name & icon */}
+          <div className="h-8 px-4 bg-slate-100 border-b border-slate-200 flex items-center justify-between text-xs shrink-0">
+            <div className="flex items-center gap-1.5">
+              <div className="h-7 px-3 rounded-t-md bg-white border-t border-x border-slate-200 font-semibold text-slate-800 flex items-center gap-2 shadow-2xs">
+                <Code2 className="w-3.5 h-3.5 text-orange-500" />
+                <span>{activeFileName}</span>
               </div>
-
-              {/* Textarea Code Input */}
-              <div className="flex-1 relative h-full overflow-hidden bg-white dark:bg-[#0d0d0e]">
-                <textarea
-                  ref={textareaRef}
-                  value={code}
-                  onChange={e => setCode(e.target.value)}
-                  onKeyDown={handleEditorKeyDown}
-                  spellCheck={false}
-                  style={{ fontSize: `${fontSize}px`, lineHeight: `${fontSize * 1.5}px` }}
-                  className="w-full h-full p-4 font-mono text-zinc-900 dark:text-zinc-200 bg-white dark:bg-[#0d0d0e] focus:outline-none resize-none selection:bg-[#ea763f]/20 leading-normal overflow-y-auto whitespace-pre"
-                  placeholder="Write your solution here..."
-                />
-              </div>
+              <button className="h-6 w-6 rounded flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200 cursor-pointer text-xs font-bold">
+                +
+              </button>
             </div>
 
-            {/* Bottom Bar of Editor (Font size, format, fullscreen matching Image 2) */}
-            <div className="h-8 px-4 bg-[#f8fafc] dark:bg-[#141416] border-t border-zinc-200/80 dark:border-[#232326] flex items-center justify-end gap-3 text-xs text-zinc-500 shrink-0">
+            <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
+              <span>UTF-8</span>
+              <span>•</span>
+              <span className="uppercase">{selectedLang}</span>
+            </div>
+          </div>
+
+          {/* Code Editor Body (Real Monaco VS Code Engine with Colorful Syntax Highlighting) */}
+          <div className="flex-1 flex flex-col min-h-0 relative overflow-hidden bg-white">
+            <div className="flex-1 w-full h-full min-h-0 relative">
+              <Editor
+                height="100%"
+                language={monacoLanguage}
+                theme={editorTheme}
+                value={code}
+                onChange={val => setCode(val || '')}
+                onMount={handleEditorDidMount}
+                options={{
+                  fontSize,
+                  fontFamily: '"JetBrains Mono", "Fira Code", Menlo, Monaco, "Courier New", monospace',
+                  fontLigatures: true,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  lineNumbers: 'on',
+                  bracketPairColorization: { enabled: true },
+                  guides: { bracketPairs: true },
+                  automaticLayout: true,
+                  tabSize: 4,
+                  wordWrap: 'on',
+                  padding: { top: 12, bottom: 12 },
+                  smoothScrolling: true,
+                  cursorBlinking: 'smooth',
+                  cursorSmoothCaretAnimation: 'on',
+                  renderLineHighlight: 'all',
+                }}
+              />
+            </div>
+
+            {/* Bottom Bar of Editor (Font size, format, fullscreen) */}
+            <div className="h-8 px-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3 text-xs text-slate-500 shrink-0">
               <select
                 value={fontSize}
                 onChange={e => setFontSize(Number(e.target.value))}
-                className="bg-transparent text-zinc-500 dark:text-zinc-400 text-xs focus:outline-none cursor-pointer"
+                className="bg-transparent text-slate-600 text-xs focus:outline-none cursor-pointer font-medium"
                 title="Editor Font Size"
               >
                 <option value={12}>12px</option>
                 <option value={13}>13px</option>
                 <option value={14}>14px</option>
                 <option value={16}>16px</option>
+                <option value={18}>18px</option>
               </select>
               <button 
                 onClick={() => setIsFullscreen(f => !f)} 
-                className="p-1 hover:text-zinc-800 dark:hover:text-white transition-colors cursor-pointer"
+                className="p-1 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
                 title="Toggle Fullscreen"
               >
                 <Maximize2 className="w-3.5 h-3.5" />
@@ -1306,26 +1415,26 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
             </div>
           </div>
 
-          {/* BOTTOM SPLIT: Test Cases Panel matching Image 2 */}
-          <div className={`border-t border-zinc-200/80 dark:border-[#232326] bg-white dark:bg-[#121214] flex flex-col transition-all duration-200 ${
+          {/* BOTTOM SPLIT: Test Cases Panel */}
+          <div className={`border-t border-slate-200 bg-white flex flex-col transition-all duration-200 ${
             isConsoleExpanded ? 'h-64 sm:h-72' : 'h-11'
           }`}>
             {/* Header: Purple Test Cases badge & collapse toggle */}
-            <div className="h-11 px-4 bg-[#fafafa] dark:bg-[#141416] border-b border-zinc-200/80 dark:border-[#232326] flex items-center justify-between gap-2 shrink-0 select-none">
+            <div className="h-11 px-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2 shrink-0 select-none">
               <div className="flex items-center gap-2">
-                <span className="p-1 rounded bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                <span className="p-1 rounded bg-purple-100 text-purple-700">
                   <Terminal className="w-3.5 h-3.5" />
                 </span>
-                <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
+                <span className="text-xs font-bold text-purple-700">
                   Test Cases
                 </span>
                 {runStatus === 'accepted' && (
-                  <span className="ml-2 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 rounded-full border border-emerald-200">
+                  <span className="ml-2 px-2 py-0.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 rounded-full border border-emerald-200">
                     Passed
                   </span>
                 )}
                 {runStatus === 'error' && (
-                  <span className="ml-2 px-2 py-0.5 text-[10px] font-semibold text-rose-700 bg-rose-50 rounded-full border border-rose-200">
+                  <span className="ml-2 px-2 py-0.5 text-[10px] font-bold text-rose-700 bg-rose-50 rounded-full border border-rose-200">
                     Error
                   </span>
                 )}
@@ -1334,7 +1443,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsConsoleExpanded(prev => !prev)}
-                  className="p-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-white cursor-pointer"
+                  className="p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
                   title={isConsoleExpanded ? "Collapse" : "Expand"}
                 >
                   <ChevronDown className={`w-4 h-4 transition-transform ${isConsoleExpanded ? '' : 'rotate-180'}`} />
@@ -1342,20 +1451,20 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               </div>
             </div>
 
-            {/* Test Case Subtabs & Input Field matching Image 2 */}
+            {/* Test Case Subtabs & Input Field */}
             {isConsoleExpanded && (
-              <div className="flex-1 min-h-0 overflow-y-auto p-4 text-xs font-mono bg-white dark:bg-[#0d0d0e]">
+              <div className="flex-1 min-h-0 overflow-y-auto p-4 text-xs font-mono bg-white">
                 {/* Case 1 (orange pill), Case 2, + and Reset on right */}
-                <div className="flex items-center justify-between gap-2 pb-3 border-b border-zinc-100 dark:border-zinc-800/80 mb-3">
+                <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-100 mb-3">
                   <div className="flex items-center gap-2 flex-wrap">
                     {testcases.map((_, idx) => (
                       <button
                         key={idx}
                         onClick={() => { setSelectedTestCaseIdx(idx); setIsCustomTab(false); }}
-                        className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                           !isCustomTab && selectedTestCaseIdx === idx
-                            ? 'bg-[#ffedd5] text-[#ea763f] dark:bg-orange-500/20 dark:text-orange-400 shadow-2xs'
-                            : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                            ? 'bg-orange-100 text-orange-700 border border-orange-200 shadow-2xs'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                         }`}
                       >
                         Case {idx + 1}
@@ -1365,8 +1474,8 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                       onClick={() => setIsCustomTab(true)}
                       className={`px-2.5 py-1 text-xs font-bold rounded cursor-pointer transition-colors ${
                         isCustomTab
-                          ? 'bg-[#ffedd5] text-[#ea763f] dark:bg-orange-500/20 dark:text-orange-400 shadow-2xs'
-                          : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                          ? 'bg-orange-100 text-orange-700 border border-orange-200 shadow-2xs'
+                          : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
                       }`}
                       title="Add Custom Case"
                     >
@@ -1383,7 +1492,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                       setReturnValue(null);
                       setRunStatus('idle');
                     }}
-                    className="flex items-center gap-1 text-[11px] text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 hover:underline cursor-pointer"
+                    className="flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-800 hover:underline cursor-pointer"
                   >
                     <RotateCcw className="w-3 h-3" />
                     <span>Reset</span>
@@ -1393,31 +1502,31 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                 {/* Custom Input, Console Output, or Testcase Parameters */}
                 {isCustomTab ? (
                   <div className="space-y-2">
-                    <div className="text-[11px] font-bold tracking-wider text-zinc-400 uppercase">
+                    <div className="text-[11px] font-bold tracking-wider text-slate-500 uppercase">
                       Custom Test Case Input:
                     </div>
                     <textarea
                       value={customInput}
                       onChange={e => setCustomInput(e.target.value)}
                       placeholder="Enter custom inputs (e.g. MARKS = 95)..."
-                      className="w-full h-24 p-3 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-[#f8fafc] dark:bg-[#141416] text-zinc-800 dark:text-zinc-200 text-xs font-mono focus:outline-none resize-none"
+                      className="w-full h-24 p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-xs font-mono focus:outline-none focus:border-orange-500 resize-none"
                     />
                   </div>
                 ) : consoleOutput || returnValue ? (
                   <div className="space-y-2">
-                    <div className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+                    <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
                       <span>Execution Output:</span>
                       {executionTime !== null && (
-                        <span className="text-zinc-500 font-normal">Runtime: {executionTime}ms</span>
+                        <span className="text-slate-500 font-normal">Runtime: {executionTime}ms</span>
                       )}
                     </div>
                     {consoleOutput && (
-                      <div className="p-3 bg-[#f8fafc] dark:bg-[#141416] border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-800 dark:text-zinc-200 text-xs font-mono whitespace-pre-wrap">
+                      <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs font-mono whitespace-pre-wrap">
                         {consoleOutput}
                       </div>
                     )}
                     {returnValue && (
-                      <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl text-emerald-800 dark:text-emerald-300 text-xs font-mono whitespace-pre-wrap">
+                      <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-mono whitespace-pre-wrap font-bold">
                         Return: {returnValue}
                       </div>
                     )}
@@ -1426,10 +1535,10 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                   <div className="space-y-2">
                     {Object.entries(activeTestcase?.inputs || { 'MARKS': '95' }).map(([key, val]) => (
                       <div key={key} className="space-y-1">
-                        <div className="text-[11px] font-bold tracking-wider text-zinc-400 uppercase">
+                        <div className="text-[11px] font-bold tracking-wider text-slate-500 uppercase">
                           {key}
                         </div>
-                        <div className="p-3 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-[#141416] text-zinc-800 dark:text-zinc-200 text-xs font-mono shadow-2xs">
+                        <div className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-xs font-mono shadow-2xs">
                           {val}
                         </div>
                       </div>
@@ -1442,6 +1551,5 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
         </div>
       </div>
     </div>
-  </div>
-);
+  );
 };

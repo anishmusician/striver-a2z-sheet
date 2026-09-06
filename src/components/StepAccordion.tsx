@@ -80,18 +80,18 @@ export const StepAccordion: React.FC<StepAccordionProps> = ({
                 className="tuf-accordion-header hover:no-underline px-3.5 md:px-5 py-3.5 w-full select-none"
               >
                 <div className="flex items-center gap-2.5 md:gap-3.5 min-w-0 w-full">
-                  <ChevronRight className="w-4 h-4 text-zinc-400 transition-transform tuf-accordion-icon shrink-0" />
-                  <span className="text-sm sm:text-[15px] flex-1 min-w-0 text-left font-medium text-zinc-800 dark:text-zinc-100">
+                  <ChevronRight className="w-4 h-4 text-slate-400 transition-transform tuf-accordion-icon shrink-0" />
+                  <span className="text-sm sm:text-[15px] flex-1 min-w-0 text-left font-semibold text-slate-900">
                     {step.title}
                   </span>
                   <div className="flex items-center gap-3 md:gap-4 ml-auto shrink-0">
-                    <div className="w-20 md:w-32 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="w-20 md:w-32 h-1.5 bg-slate-100 border border-slate-200/60 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full transition-all duration-300" 
                         style={{ width: `${stepPct}%` }} 
                       />
                     </div>
-                    <span className="text-xs sm:text-[13px] min-w-[3.5rem] text-right font-mono text-zinc-500 dark:text-zinc-400">
+                    <span className="text-xs sm:text-[13px] min-w-[3.5rem] text-right font-mono text-slate-500 font-medium">
                       {stepSolved} / {stepTotal}
                     </span>
                   </div>
@@ -101,7 +101,7 @@ export const StepAccordion: React.FC<StepAccordionProps> = ({
 
             {/* Step Expanded Content: Subcategories */}
             {isStepOpen && (
-              <div className="tuf-accordion-body py-2 px-2 md:px-4 border-t border-[var(--border)] bg-[var(--accordion-body-bg)]">
+              <div className="tuf-accordion-body py-2 px-2 md:px-4 border-t border-slate-200 bg-[#fafbfc]">
                 <div className="space-y-2 py-1">
                   {step.subcategories.map(sub => {
                     const isSubOpen = !!expandedSubsteps[sub.id];
@@ -115,27 +115,27 @@ export const StepAccordion: React.FC<StepAccordionProps> = ({
                         {/* Sub-step Trigger */}
                         <div className="tuf-subrow-row">
                           <div className="tuf-subrow-gutter">
-                            <span className={`tuf-subrow-dot ${isAllSolved ? 'bg-emerald-500 shadow-xs shadow-emerald-500/50' : ''}`} />
+                            <span className={`tuf-subrow-dot ${isAllSolved ? 'bg-emerald-500 shadow-xs shadow-emerald-500/50' : 'bg-slate-300'}`} />
                           </div>
 
                           <button
                             type="button"
                             data-state={isSubOpen ? "open" : "closed"}
                             onClick={() => toggleSubstep(sub.id)}
-                            className="tuf-subrow-btn px-2 rounded-lg hover:bg-orange-500/5 dark:hover:bg-zinc-800/40 select-none transition-colors"
+                            className="tuf-subrow-btn px-2 rounded-lg hover:bg-orange-50/80 select-none transition-colors"
                           >
                             <div className="flex items-center gap-2 min-w-0 flex-1">
-                              <ChevronRight className="tuf-accordion-icon w-4 h-4 text-zinc-400" />
-                              <span className="tuf-accordion-title text-sm text-zinc-200">
+                              <ChevronRight className="tuf-accordion-icon w-4 h-4 text-slate-400" />
+                              <span className="tuf-accordion-title text-sm font-medium text-slate-800">
                                 {sub.title}
                               </span>
                             </div>
 
                             <div className="flex items-center gap-2 ml-auto shrink-0">
-                              <div className="tuf-accordion-progress w-14 md:w-24">
+                              <div className="tuf-accordion-progress w-14 md:w-24 bg-slate-200">
                                 <div className="tuf-accordion-progress-bar" style={{ width: `${subPct}%` }} />
                               </div>
-                              <span className="tuf-subrow-count text-xs font-mono min-w-[3rem] text-right text-zinc-400">
+                              <span className="tuf-subrow-count text-xs font-mono min-w-[3rem] text-right text-slate-500 font-medium">
                                 {subSolved} / {subTotal}
                               </span>
                             </div>

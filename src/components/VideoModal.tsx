@@ -38,19 +38,19 @@ export const VideoModal: React.FC<VideoModalProps> = ({ url, title, onClose }) =
     : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
       <div 
-        className="relative w-full max-w-4xl bg-slate-900 border border-slate-700/80 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        className="relative w-full max-w-4xl bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 bg-slate-800/80 border-b border-slate-700/80">
+        <div className="flex items-center justify-between px-5 py-3.5 bg-white border-b border-slate-200">
           <div className="flex items-center gap-3">
             <span className="flex h-3 w-3 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
             </span>
-            <h3 className="font-semibold text-slate-100 text-sm md:text-base line-clamp-1">
+            <h3 className="font-semibold text-slate-900 text-sm md:text-base line-clamp-1">
               {title} - Video Walkthrough
             </h3>
           </div>
@@ -59,14 +59,14 @@ export const VideoModal: React.FC<VideoModalProps> = ({ url, title, onClose }) =
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 rounded-lg transition-colors"
+              className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
               title="Open directly on YouTube"
             >
               <ExternalLink className="w-4 h-4" />
             </a>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
               title="Close"
             >
               <X className="w-5 h-5" />
@@ -85,7 +85,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ url, title, onClose }) =
               allowFullScreen
             />
           ) : (
-            <div className="text-center p-8">
+            <div className="text-center p-8 bg-slate-950">
               <p className="text-slate-400 mb-4">Could not parse video directly for embedding.</p>
               <a
                 href={url}
@@ -100,7 +100,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ url, title, onClose }) =
         </div>
 
         {/* Footer info */}
-        <div className="px-5 py-3 bg-slate-900/90 text-xs text-slate-400 flex items-center justify-between border-t border-slate-800">
+        <div className="px-5 py-3 bg-slate-50 text-xs text-slate-500 flex items-center justify-between border-t border-slate-200">
           <span>Official TakeUforward Striver Tutorial</span>
           {startTime > 0 && <span>Starts at {Math.floor(startTime / 60)}m {startTime % 60}s</span>}
         </div>

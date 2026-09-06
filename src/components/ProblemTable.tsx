@@ -25,11 +25,11 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
 }) => {
   return (
     <div className="font-firaSans relative my-2">
-      <div className="bg-[var(--surface-1)] border border-[var(--surface-border-muted)] rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="table-auto w-full min-w-[850px] font-firaSans divide-y divide-[var(--surface-border-muted)]">
+          <table className="table-auto w-full min-w-[850px] font-firaSans divide-y divide-slate-200/80">
             {/* Exact takeUforward Table Header */}
-            <thead className="text-xs font-semibold leading-snug text-[var(--sheet-header-text)] bg-slate-50/90 dark:bg-[var(--surface-1)] h-12 select-none">
+            <thead className="text-xs font-semibold leading-snug text-slate-600 bg-slate-50/90 border-b border-slate-200 h-11 select-none">
               <tr>
                 <th className="px-3 py-3 w-[5%] text-center">
                   <p>Status</p>
@@ -71,7 +71,7 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
             </thead>
 
             {/* Table Rows */}
-            <tbody className="divide-y divide-[var(--surface-border-muted)] bg-[var(--surface-1)]">
+            <tbody className="divide-y divide-slate-100 bg-white">
               {problems.map((p) => {
                 const isSolved = getStatus(p.id) === 'solved';
                 const starred = isStarred(p.id);
@@ -81,16 +81,16 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                 const hasPractice = Boolean(p.leetcode || p.gfg);
 
                 const difficultyColor = {
-                  Easy: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200/90 dark:border-emerald-500/30',
-                  Medium: 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-200/90 dark:border-amber-500/30',
-                  Hard: 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-200/90 dark:border-rose-500/30',
-                }[p.difficulty] || 'text-slate-700 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700';
+                  Easy: 'text-emerald-700 bg-emerald-50 border-emerald-200',
+                  Medium: 'text-amber-700 bg-amber-50 border-amber-200',
+                  Hard: 'text-rose-700 bg-rose-50 border-rose-200',
+                }[p.difficulty] || 'text-slate-700 bg-slate-100 border-slate-200';
 
                 return (
                   <tr
                     key={p.id}
-                    className={`transition-colors hover:bg-orange-50/50 dark:hover:bg-[var(--base-bg-hover)] ${
-                      isSolved ? 'bg-emerald-50/30 dark:bg-[#121213]/80' : ''
+                    className={`transition-colors hover:bg-orange-50/60 ${
+                      isSolved ? 'bg-emerald-50/30' : ''
                     }`}
                   >
                     {/* Status Checkbox */}
@@ -110,8 +110,8 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                     <td className="px-4 py-3 w-[30%] text-left align-middle">
                       <button
                         onClick={() => onOpenWorkspace(p)}
-                        className={`text-left text-sm font-medium transition-colors hover:text-[var(--brand)] hover:underline cursor-pointer line-clamp-2 ${
-                          isSolved ? 'text-zinc-400 line-through decoration-zinc-400' : 'text-zinc-900 dark:text-[var(--base-text-primary)]'
+                        className={`text-left text-sm font-medium transition-colors hover:text-orange-600 hover:underline cursor-pointer line-clamp-2 ${
+                          isSolved ? 'text-slate-400 line-through decoration-slate-400' : 'text-slate-900'
                         }`}
                       >
                         {p.title}
@@ -123,13 +123,13 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                       {p.plus ? (
                         <button
                           onClick={() => onOpenWorkspace(p)}
-                          className="font-semibold text-xs px-2.5 py-1 rounded-md transition-all cursor-pointer bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-xs hover:from-orange-600 hover:to-amber-600 hover:shadow-sm active:scale-95 dark:bg-none dark:bg-orange-500/10 dark:text-[var(--brand)] dark:border dark:border-orange-500/30 dark:hover:bg-orange-500/20"
+                          className="font-semibold text-xs px-2.5 py-1 rounded-md transition-all cursor-pointer bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-xs hover:from-orange-600 hover:to-amber-600 hover:shadow-sm active:scale-95"
                           title="Free In-Browser Solve (0 Credits)"
                         >
                           Solve
                         </button>
                       ) : (
-                        <span className="text-zinc-400 dark:text-zinc-600 text-xs select-none">---</span>
+                        <span className="text-slate-300 text-xs select-none">---</span>
                       )}
                     </td>
 
@@ -138,7 +138,7 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                       {p.editorial && p.youtube ? (
                         <button
                           onClick={() => onOpenVideo(p.youtube!, p.title)}
-                          className="inline-flex items-center justify-center p-1.5 rounded-lg bg-orange-50 dark:bg-transparent hover:bg-orange-100 dark:hover:bg-zinc-800 border border-orange-200/60 dark:border-transparent transition-all cursor-pointer group shadow-xs dark:shadow-none"
+                          className="inline-flex items-center justify-center p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 border border-orange-200/60 transition-all cursor-pointer group shadow-xs"
                           title="Watch Video Editorial"
                         >
                           <svg width="22" height="16" viewBox="0 0 24 18" fill="none" className="text-red-500 group-hover:scale-110 transition-transform">
@@ -147,7 +147,7 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                           </svg>
                         </button>
                       ) : (
-                        <span className="text-zinc-400 dark:text-zinc-600 text-xs select-none">---</span>
+                        <span className="text-slate-300 text-xs select-none">---</span>
                       )}
                     </td>
 
@@ -161,7 +161,7 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                               href={p.article}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sky-600 dark:text-zinc-400 bg-sky-50 dark:bg-transparent border border-sky-200/70 dark:border-transparent hover:bg-sky-100 dark:hover:bg-zinc-800 hover:text-sky-500 dark:hover:text-sky-400 transition-all p-1.5 rounded-lg shadow-xs dark:shadow-none"
+                              className="text-sky-600 bg-sky-50 border border-sky-200/70 hover:bg-sky-100 hover:text-sky-700 transition-all p-1.5 rounded-lg shadow-xs"
                               title="Read Editorial Article"
                             >
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -178,7 +178,7 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                           {p.youtube ? (
                             <button
                               onClick={() => onOpenVideo(p.youtube!, p.title)}
-                              className="text-red-600 dark:text-zinc-400 bg-red-50 dark:bg-transparent border border-red-200/70 dark:border-transparent hover:bg-red-100 dark:hover:bg-zinc-800 hover:text-red-500 dark:hover:text-red-400 transition-all p-1.5 rounded-lg cursor-pointer shadow-xs dark:shadow-none"
+                              className="text-red-600 bg-red-50 border border-red-200/70 hover:bg-red-100 hover:text-red-700 transition-all p-1.5 rounded-lg cursor-pointer shadow-xs"
                               title="Watch Video Solution"
                             >
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -188,7 +188,7 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                           ) : null}
                         </div>
                       ) : (
-                        <span className="text-zinc-400 dark:text-zinc-600 text-xs select-none">---</span>
+                        <span className="text-slate-300 text-xs select-none">---</span>
                       )}
                     </td>
 
@@ -202,7 +202,7 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                               href={p.leetcode}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-1.5 rounded-lg bg-amber-50 dark:bg-transparent border border-amber-200/70 dark:border-transparent hover:bg-amber-100 dark:hover:bg-zinc-800 transition-all shadow-xs dark:shadow-none"
+                              className="p-1.5 rounded-lg bg-amber-50 border border-amber-200/70 hover:bg-amber-100 transition-all shadow-xs"
                               title="Practice on LeetCode"
                             >
                               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-amber-500 hover:scale-110 transition-transform">
@@ -218,17 +218,17 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                               href={p.gfg}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-1 rounded-lg bg-emerald-50 dark:bg-transparent border border-emerald-200/70 dark:border-transparent hover:bg-emerald-100 dark:hover:bg-zinc-800 transition-all shadow-xs dark:shadow-none"
+                              className="p-1 rounded-lg bg-emerald-50 border border-emerald-200/70 hover:bg-emerald-100 transition-all shadow-xs"
                               title="Practice on GeeksforGeeks"
                             >
-                              <span className="font-bold text-[10px] text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/30 hover:bg-emerald-200 dark:hover:bg-emerald-500/20">
+                              <span className="font-bold text-[10px] text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded border border-emerald-300 hover:bg-emerald-200">
                                 GFG
                               </span>
                             </a>
                           ) : null}
                         </div>
                       ) : (
-                        <span className="text-zinc-400 dark:text-zinc-600 text-xs select-none">---</span>
+                        <span className="text-slate-300 text-xs select-none">---</span>
                       )}
                     </td>
 
@@ -237,10 +237,10 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                       <div className="flex justify-center">
                         <button
                           onClick={() => onOpenWorkspace(p)}
-                          className={`p-1.5 rounded-lg transition-all cursor-pointer shadow-xs dark:shadow-none ${
+                          className={`p-1.5 rounded-lg transition-all cursor-pointer shadow-xs ${
                             hasNotes
-                              ? 'bg-purple-50 dark:bg-transparent text-purple-600 dark:text-[var(--brand)] border border-purple-200 dark:border-transparent hover:bg-purple-100 dark:hover:bg-zinc-800'
-                              : 'text-zinc-400 dark:text-zinc-500 hover:text-purple-600 dark:hover:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                              ? 'bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100'
+                              : 'text-slate-400 hover:text-purple-600 hover:bg-slate-100'
                           }`}
                           title={hasNotes ? "Edit Note" : "Add Note"}
                         >
@@ -254,10 +254,10 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                       <div className="flex justify-center items-center">
                         <button
                           onClick={() => onToggleStarred(p.id)}
-                          className="p-1.5 cursor-pointer transition-transform active:scale-125 rounded-lg hover:bg-amber-50 dark:hover:bg-transparent"
+                          className="p-1.5 cursor-pointer transition-transform active:scale-125 rounded-lg hover:bg-amber-50"
                           title={starred ? "Remove from Revision" : "Mark for Revision"}
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={starred ? "fill-amber-400 stroke-amber-500 filter drop-shadow-xs" : "stroke-zinc-400 dark:stroke-zinc-600 fill-transparent hover:stroke-amber-400"}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={starred ? "fill-amber-400 stroke-amber-500 filter drop-shadow-xs" : "stroke-slate-300 fill-transparent hover:stroke-amber-400"}>
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14 18.18 21.19 12 17.27 5.82 21.19 7 14 2 9.27 8.91 8.26 12 2" />
                           </svg>
                         </button>
@@ -267,7 +267,7 @@ export const ProblemTable: React.FC<ProblemTableProps> = ({
                     {/* Difficulty Pill */}
                     <td className="w-[9%] text-center align-middle">
                       <div className="flex justify-center">
-                        <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-md border text-center min-w-[62px] shadow-xs dark:shadow-none ${difficultyColor}`}>
+                        <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-md border text-center min-w-[62px] shadow-xs ${difficultyColor}`}>
                           {p.difficulty}
                         </span>
                       </div>

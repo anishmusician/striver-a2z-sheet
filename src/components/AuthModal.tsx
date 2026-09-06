@@ -98,39 +98,39 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn">
       <div 
-        className="relative w-full max-w-xl bg-[#121214] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-xl bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#17171a]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-              <User className="w-5 h-5 text-[#ea763f]" />
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <User className="w-5 h-5 text-orange-600" />
               <span>Learner Account &amp; Friends</span>
             </h2>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Zero server errors • Isolated profiles for you and your friend
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex border-b border-white/10 bg-[#141416] px-6 text-xs font-semibold">
+        <div className="flex border-b border-slate-200 bg-slate-50/60 px-6 text-xs font-semibold">
           <button
             onClick={() => setActiveTab('profile')}
             className={`flex items-center gap-2 py-3 px-4 border-b-2 transition-colors cursor-pointer ${
               activeTab === 'profile'
-                ? 'text-[#ea763f] border-[#ea763f]'
-                : 'text-zinc-400 border-transparent hover:text-zinc-200'
+                ? 'text-orange-600 border-orange-600 font-bold'
+                : 'text-slate-500 border-transparent hover:text-slate-800'
             }`}
           >
             <User className="w-3.5 h-3.5" />
@@ -141,8 +141,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             onClick={() => setActiveTab('friends')}
             className={`flex items-center gap-2 py-3 px-4 border-b-2 transition-colors cursor-pointer ${
               activeTab === 'friends'
-                ? 'text-[#ea763f] border-[#ea763f]'
-                : 'text-zinc-400 border-transparent hover:text-zinc-200'
+                ? 'text-orange-600 border-orange-600 font-bold'
+                : 'text-slate-500 border-transparent hover:text-slate-800'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -151,31 +151,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 text-sm text-zinc-200">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 text-sm text-slate-800">
           {/* TAB 1: PROFILES */}
           {activeTab === 'profile' && (
             <div className="space-y-6">
               {/* Active Profile Card */}
-              <div className="p-4 rounded-xl bg-[#18181b] border border-white/10 flex items-center justify-between gap-4">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5 min-w-0">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${currentProfile.avatarColor} flex items-center justify-center text-lg font-bold text-white shadow-md shrink-0`}>
+                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${currentProfile.avatarColor} flex items-center justify-center text-lg font-bold text-white shadow-xs shrink-0`}>
                     {currentProfile.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-base font-bold text-white truncate">{currentProfile.name}</span>
-                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+                      <span className="text-base font-bold text-slate-900 truncate">{currentProfile.name}</span>
+                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
                         Active
                       </span>
                     </div>
-                    <div className="text-xs text-zinc-400 font-mono mt-0.5">
+                    <div className="text-xs text-slate-500 font-mono mt-0.5">
                       User ID: @{currentProfile.username}
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-zinc-300 mt-1.5 font-mono">
-                      <span className="text-emerald-400 font-semibold">{totalSolved} / 474 Solved</span>
+                    <div className="flex items-center gap-3 text-xs text-slate-600 mt-1.5 font-mono">
+                      <span className="text-emerald-700 font-semibold">{totalSolved} / 474 Solved</span>
                       <span>•</span>
-                      <span className="text-orange-400 flex items-center gap-1">
-                        <Flame className="w-3 h-3 fill-orange-400" />
+                      <span className="text-orange-600 flex items-center gap-1 font-semibold">
+                        <Flame className="w-3 h-3 fill-orange-500" />
                         {activeStreak}d Streak
                       </span>
                     </div>
@@ -190,7 +190,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     setIsEditing(prev => !prev);
                     setIsCreating(false);
                   }}
-                  className="px-3 py-1.5 text-xs text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer shrink-0"
+                  className="px-3 py-1.5 text-xs text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors cursor-pointer shrink-0 shadow-xs"
                 >
                   {isEditing ? 'Cancel' : 'Edit ID'}
                 </button>
@@ -198,31 +198,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               {/* Edit Form */}
               {isEditing && (
-                <form onSubmit={handleUpdateSubmit} className="p-4 bg-[#141416] border border-white/10 rounded-xl space-y-4 animate-fadeIn">
-                  <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
+                <form onSubmit={handleUpdateSubmit} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4 animate-fadeIn">
+                  <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                     Edit Profile &amp; User ID
                   </h4>
                   <div>
-                    <label className="text-xs text-zinc-400 block mb-1">Display Name</label>
+                    <label className="text-xs text-slate-600 block mb-1">Display Name</label>
                     <input
                       type="text"
                       value={name}
                       onChange={e => setName(e.target.value)}
-                      className="w-full px-3 py-2 bg-[#1c1c1f] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#ea763f]"
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
                       placeholder="e.g. Anish Kumar"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs text-zinc-400 block mb-1">User ID (Username)</label>
-                    <div className="flex items-center bg-[#1c1c1f] border border-white/10 rounded-lg px-3 py-2 text-xs">
-                      <span className="text-zinc-500 mr-1">@</span>
+                    <label className="text-xs text-slate-600 block mb-1">User ID (Username)</label>
+                    <div className="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs">
+                      <span className="text-slate-400 mr-1">@</span>
                       <input
                         type="text"
                         value={username}
                         onChange={e => setUsername(e.target.value)}
-                        className="w-full bg-transparent text-white focus:outline-none"
+                        className="w-full bg-transparent text-slate-900 focus:outline-none"
                         placeholder="anish"
                         required
                       />
@@ -230,7 +230,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="text-xs text-zinc-400 block mb-1.5">Avatar Color</label>
+                    <label className="text-xs text-slate-600 block mb-1.5">Avatar Color</label>
                     <div className="flex items-center gap-2">
                       {AVATAR_GRADIENTS.map((grad, i) => (
                         <button
@@ -238,7 +238,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                           type="button"
                           onClick={() => setSelectedColor(grad)}
                           className={`w-7 h-7 rounded-full bg-gradient-to-tr ${grad} transition-transform cursor-pointer ${
-                            selectedColor === grad ? 'scale-125 ring-2 ring-white ring-offset-2 ring-offset-[#141416]' : 'opacity-70 hover:opacity-100'
+                            selectedColor === grad ? 'scale-125 ring-2 ring-orange-500 ring-offset-2 ring-offset-white' : 'opacity-70 hover:opacity-100'
                           }`}
                         />
                       ))}
@@ -249,13 +249,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setIsEditing(false)}
-                      className="px-3 py-1.5 text-xs text-zinc-400 hover:text-white"
+                      className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-1.5 text-xs bg-[#ea763f] hover:bg-[#d9622b] text-white rounded-lg font-semibold"
+                      className="px-4 py-1.5 text-xs bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold shadow-xs"
                     >
                       Save Changes
                     </button>
@@ -266,7 +266,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {/* Profiles Switcher List */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                  <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
                     Switch Learner Account
                   </h3>
                   <button
@@ -276,7 +276,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       setName('');
                       setUsername('');
                     }}
-                    className="flex items-center gap-1 text-xs text-[#ea763f] hover:underline cursor-pointer"
+                    className="flex items-center gap-1 text-xs text-orange-600 hover:underline cursor-pointer font-semibold"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>{isCreating ? 'Cancel' : 'Add Friend / New Account'}</span>
@@ -285,31 +285,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
                 {/* Create New Profile Form */}
                 {isCreating && (
-                  <form onSubmit={handleCreateSubmit} className="p-4 bg-[#141416] border border-white/10 rounded-xl space-y-4 animate-fadeIn">
-                    <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
+                  <form onSubmit={handleCreateSubmit} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4 animate-fadeIn">
+                    <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                       Create Friend / Second Account
                     </h4>
                     <div>
-                      <label className="text-xs text-zinc-400 block mb-1">Friend / Learner Name</label>
+                      <label className="text-xs text-slate-600 block mb-1">Friend / Learner Name</label>
                       <input
                         type="text"
                         value={name}
                         onChange={e => setName(e.target.value)}
-                        className="w-full px-3 py-2 bg-[#1c1c1f] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#ea763f]"
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
                         placeholder="e.g. Rahul Sharma"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs text-zinc-400 block mb-1">User ID</label>
-                      <div className="flex items-center bg-[#1c1c1f] border border-white/10 rounded-lg px-3 py-2 text-xs">
-                        <span className="text-zinc-500 mr-1">@</span>
+                      <label className="text-xs text-slate-600 block mb-1">User ID</label>
+                      <div className="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs">
+                        <span className="text-slate-400 mr-1">@</span>
                         <input
                           type="text"
                           value={username}
                           onChange={e => setUsername(e.target.value)}
-                          className="w-full bg-transparent text-white focus:outline-none"
+                          className="w-full bg-transparent text-slate-900 focus:outline-none"
                           placeholder="rahul_dsa"
                           required
                         />
@@ -317,7 +317,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     </div>
 
                     <div>
-                      <label className="text-xs text-zinc-400 block mb-1.5">Avatar Color</label>
+                      <label className="text-xs text-slate-600 block mb-1.5">Avatar Color</label>
                       <div className="flex items-center gap-2">
                         {AVATAR_GRADIENTS.map((grad, i) => (
                           <button
@@ -325,7 +325,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                             type="button"
                             onClick={() => setSelectedColor(grad)}
                             className={`w-7 h-7 rounded-full bg-gradient-to-tr ${grad} transition-transform cursor-pointer ${
-                              selectedColor === grad ? 'scale-125 ring-2 ring-white ring-offset-2 ring-offset-[#141416]' : 'opacity-70 hover:opacity-100'
+                              selectedColor === grad ? 'scale-125 ring-2 ring-orange-500 ring-offset-2 ring-offset-white' : 'opacity-70 hover:opacity-100'
                             }`}
                           />
                         ))}
@@ -336,13 +336,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       <button
                         type="button"
                         onClick={() => setIsCreating(false)}
-                        className="px-3 py-1.5 text-xs text-zinc-400 hover:text-white"
+                        className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="px-4 py-1.5 text-xs bg-[#ea763f] hover:bg-[#d9622b] text-white rounded-lg font-semibold"
+                        className="px-4 py-1.5 text-xs bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold shadow-xs"
                       >
                         Create Account
                       </button>
@@ -359,29 +359,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         key={p.id}
                         className={`p-3 rounded-xl border flex items-center justify-between gap-3 transition-colors ${
                           isSelected
-                            ? 'bg-[#1c1c1f] border-[#ea763f]/40'
-                            : 'bg-[#141416] border-white/5 hover:border-white/15'
+                            ? 'bg-orange-50/50 border-orange-300 shadow-xs'
+                            : 'bg-white border-slate-200 hover:border-slate-300 shadow-xs'
                         }`}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${p.avatarColor} flex items-center justify-center text-xs font-bold text-white shrink-0`}>
+                          <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${p.avatarColor} flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-xs`}>
                             {p.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="min-w-0">
-                            <div className="text-xs font-semibold text-white truncate">{p.name}</div>
-                            <div className="text-[11px] text-zinc-400 font-mono">@{p.username}</div>
+                            <div className="text-xs font-semibold text-slate-900 truncate">{p.name}</div>
+                            <div className="text-[11px] text-slate-500 font-mono">@{p.username}</div>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2 shrink-0">
                           {isSelected ? (
-                            <span className="text-[11px] text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20 font-medium">
+                            <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 font-semibold">
                               Logged In
                             </span>
                           ) : (
                             <button
                               onClick={() => onSwitchProfile(p.id)}
-                              className="flex items-center gap-1 px-3 py-1 text-xs bg-[#242428] hover:bg-[#323238] text-white rounded-md transition-colors cursor-pointer"
+                              className="flex items-center gap-1 px-3 py-1 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md transition-colors cursor-pointer border border-slate-200"
                             >
                               <ArrowRightLeft className="w-3 h-3" />
                               <span>Switch</span>
@@ -391,7 +391,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                           {profiles.length > 1 && (
                             <button
                               onClick={() => onDeleteProfile(p.id)}
-                              className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors cursor-pointer"
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors cursor-pointer"
                               title="Delete Profile"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -405,21 +405,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
 
               {/* Permanent Storage & Backup */}
-              <div className="p-3.5 bg-emerald-500/5 border border-emerald-500/15 rounded-xl space-y-2.5">
+              <div className="p-3.5 bg-emerald-50/80 border border-emerald-200 rounded-xl space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs text-emerald-300 font-semibold">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <div className="flex items-center gap-2 text-xs text-emerald-900 font-semibold">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span>Permanent Storage Active (IndexedDB + Eviction Protection)</span>
                   </div>
                 </div>
-                <p className="text-[11px] text-zinc-400 leading-relaxed">
+                <p className="text-[11px] text-emerald-800/80 leading-relaxed">
                   All solved problems, code solutions, revision notes, and streaks for both Anish and Tanisha are permanently preserved.
                 </p>
                 {onExportProgress && (
                   <button
                     type="button"
                     onClick={onExportProgress}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white rounded-lg transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white hover:bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-lg transition-colors cursor-pointer shadow-xs"
                   >
                     <span>💾 Download Progress Backup (JSON)</span>
                   </button>
@@ -432,33 +432,33 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {activeTab === 'friends' && (
             <div className="space-y-6">
               {/* Share My Code Section */}
-              <div className="p-4 bg-[#18181b] border border-white/10 rounded-xl space-y-3">
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Share2 className="w-4 h-4 text-[#ea763f]" />
-                    <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
+                    <Share2 className="w-4 h-4 text-orange-600" />
+                    <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                       Share Progress with Friend
                     </h3>
                   </div>
                   <button
                     onClick={handleCopyShareCode}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[#ea763f] hover:bg-[#d9622b] text-white rounded-lg font-semibold transition-colors cursor-pointer shadow-sm"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors cursor-pointer shadow-xs"
                   >
                     {hasCopiedShareCode ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{hasCopiedShareCode ? 'Copied Code!' : 'Copy Friend Sync Code'}</span>
                   </button>
                 </div>
-                <p className="text-xs text-zinc-400 leading-relaxed">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   Send this code to your friend via WhatsApp, Discord, or Telegram. When they paste it below, they can track your solved count and streak live without needing any account or database!
                 </p>
               </div>
 
               {/* Import Friend Code Form */}
-              <form onSubmit={handleImportFriend} className="p-4 bg-[#141416] border border-white/10 rounded-xl space-y-3">
-                <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
+              <form onSubmit={handleImportFriend} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                   Add / Sync Friend&apos;s Code
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-slate-600">
                   Paste the sync code provided by your friend to compare progress and keep each other accountable.
                 </p>
                 <div className="flex gap-2">
@@ -467,11 +467,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={friendCodeInput}
                     onChange={e => setFriendCodeInput(e.target.value)}
                     placeholder="Paste friend sync code here..."
-                    className="flex-1 px-3 py-2 bg-[#1c1c1f] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#ea763f] font-mono"
+                    className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-orange-500 font-mono shadow-xs"
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2 text-xs bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-lg transition-colors cursor-pointer shrink-0"
+                    className="px-4 py-2 text-xs bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg transition-colors cursor-pointer shrink-0 shadow-xs"
                   >
                     Connect
                   </button>
@@ -479,7 +479,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
                 {importStatus && (
                   <div className={`p-2.5 rounded-lg text-xs ${
-                    importStatus.isError ? 'bg-rose-500/10 text-rose-300 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20'
+                    importStatus.isError ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                   }`}>
                     {importStatus.message}
                   </div>
@@ -488,12 +488,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               {/* Friends Leaderboard / Side-by-Side List */}
               <div className="space-y-3">
-                <h3 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
                   Connected Friends ({friends.length})
                 </h3>
 
                 {friends.length === 0 ? (
-                  <div className="p-6 text-center text-zinc-500 border border-dashed border-zinc-800 rounded-xl text-xs">
+                  <div className="p-6 text-center text-slate-500 border border-dashed border-slate-300 rounded-xl text-xs bg-slate-50/50">
                     No friends connected yet. Share your code with your study buddy to compete and learn together!
                   </div>
                 ) : (
@@ -501,20 +501,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     {friends.map(f => (
                       <div
                         key={f.profile.id}
-                        className="p-3.5 bg-[#141416] border border-white/5 rounded-xl flex items-center justify-between gap-4"
+                        className="p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-4 shadow-xs"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${f.profile.avatarColor} flex items-center justify-center text-sm font-bold text-white shrink-0`}>
+                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${f.profile.avatarColor} flex items-center justify-center text-sm font-bold text-white shrink-0 shadow-xs`}>
                             {f.profile.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="min-w-0">
-                            <div className="text-xs font-semibold text-white truncate">{f.profile.name}</div>
-                            <div className="text-[11px] text-zinc-400 font-mono">@{f.profile.username}</div>
-                            <div className="flex items-center gap-3 text-xs text-zinc-300 mt-1 font-mono">
-                              <span className="text-emerald-400 font-bold">{f.totalSolved} / {f.totalProblems} Solved</span>
+                            <div className="text-xs font-semibold text-slate-900 truncate">{f.profile.name}</div>
+                            <div className="text-[11px] text-slate-500 font-mono">@{f.profile.username}</div>
+                            <div className="flex items-center gap-3 text-xs text-slate-600 mt-1 font-mono">
+                              <span className="text-emerald-700 font-bold">{f.totalSolved} / {f.totalProblems} Solved</span>
                               <span>•</span>
-                              <span className="text-orange-400 flex items-center gap-1">
-                                <Flame className="w-3 h-3 fill-orange-400" />
+                              <span className="text-orange-600 flex items-center gap-1 font-semibold">
+                                <Flame className="w-3 h-3 fill-orange-500" />
                                 {f.activeStreak}d
                               </span>
                             </div>
@@ -523,7 +523,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
                         <button
                           onClick={() => onRemoveFriend(f.profile.id)}
-                          className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors cursor-pointer"
                           title="Remove Friend"
                         >
                           <Trash2 className="w-4 h-4" />
