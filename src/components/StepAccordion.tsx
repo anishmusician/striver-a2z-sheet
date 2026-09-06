@@ -77,18 +77,21 @@ export const StepAccordion: React.FC<StepAccordionProps> = ({
                 data-orientation="vertical"
                 data-slot="accordion-trigger"
                 onClick={() => toggleStep(step.id)}
-                className="tuf-accordion-header hover:no-underline px-3 md:px-4 w-full select-none"
+                className="tuf-accordion-header hover:no-underline px-3.5 md:px-5 py-3.5 w-full select-none"
               >
-                <div className="flex items-center gap-2 md:gap-3 min-w-0 w-full">
-                  <ChevronRight className="lucide lucide-chevron-right tuf-accordion-icon shrink-0" />
-                  <span className="tuf-accordion-title text-base flex-1 min-w-0 text-left font-medium">
+                <div className="flex items-center gap-2.5 md:gap-3.5 min-w-0 w-full">
+                  <ChevronRight className="w-4 h-4 text-zinc-400 transition-transform tuf-accordion-icon shrink-0" />
+                  <span className="text-sm sm:text-[15px] flex-1 min-w-0 text-left font-medium text-zinc-800 dark:text-zinc-100">
                     {step.title}
                   </span>
-                  <div className="flex items-center gap-2 md:gap-3 ml-auto shrink-0">
-                    <div className="tuf-accordion-progress w-16 md:w-28">
-                      <div className="tuf-accordion-progress-bar" style={{ width: `${stepPct}%` }} />
+                  <div className="flex items-center gap-3 md:gap-4 ml-auto shrink-0">
+                    <div className="w-20 md:w-32 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full transition-all duration-300" 
+                        style={{ width: `${stepPct}%` }} 
+                      />
                     </div>
-                    <span className="tuf-accordion-count text-sm md:text-base min-w-[3.5rem] text-right font-mono">
+                    <span className="text-xs sm:text-[13px] min-w-[3.5rem] text-right font-mono text-zinc-500 dark:text-zinc-400">
                       {stepSolved} / {stepTotal}
                     </span>
                   </div>

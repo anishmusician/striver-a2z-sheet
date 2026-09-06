@@ -12,7 +12,8 @@ import { AuthModal } from './components/AuthModal';
 import { LoginPage } from './components/LoginPage';
 import { authService, type AuthUser } from './services/authService';
 import { ThemeToggle } from './components/ThemeToggle';
-import { LogOut } from 'lucide-react';
+import { RightSidebar } from './components/RightSidebar';
+import { LogOut, RotateCcw, Upload } from 'lucide-react';
 
 const sheetData = sheetDataRaw as SheetData;
 
@@ -313,52 +314,72 @@ export function App() {
         onLogout={handleLogout}
       />
 
-      {/* Main Page Area */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden">
-        {/* Top Header container */}
-        <main className="flex-1 max-w-[1240px] mx-auto w-full px-3 sm:px-6 py-4 md:py-6">
-          {/* Exact takeUforward Hero Section */}
-          <div className="px-1 md:px-0 mb-4">
-            <div className="w-full flex flex-col justify-start items-start gap-2">
-              <div className="w-full flex items-center justify-between gap-3 pt-0">
-                <h1 className="text-lg md:text-2xl font-bold font-firaSans leading-tight text-[var(--base-text-primary)]">
-                  Striver&apos;s A2Z Sheet - Learn DSA from A to Z
-                </h1>
-                <div className="flex items-center gap-2 sm:gap-2.5 justify-end w-fit">
-                  {/* Theme Switcher Toggle */}
-                  <ThemeToggle variant="switch" />
+      {/* Main Page Area with Right Sidebar */}
+      <div className="flex-1 flex min-w-0 min-h-screen justify-center overflow-x-hidden">
+        <div className="flex-1 max-w-[1520px] w-full px-3 sm:px-6 py-4 md:py-6 flex gap-6 justify-center">
+          <main className="flex-1 min-w-0 max-w-[1180px]">
+            {/* Exact takeUforward Hero Section */}
+            <div className="px-1 md:px-0 mb-4">
+              <div className="w-full flex flex-col justify-start items-start gap-2">
+                <div className="w-full flex items-center justify-between gap-3 pt-0">
+                  <h1 className="text-lg md:text-2xl font-bold font-firaSans leading-tight text-[var(--base-text-primary)]">
+                    Striver&apos;s A2Z Sheet - Learn DSA from A to Z
+                  </h1>
+                  <div className="flex items-center gap-2 sm:gap-2.5 justify-end w-fit">
+                    {/* Theme Switcher Toggle */}
+                    <ThemeToggle variant="switch" />
 
-                  {/* User Profile / Learner Account Pill */}
-                  <button
-                    onClick={() => setShowAuthModal(true)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-xs text-zinc-700 dark:text-zinc-200 transition-colors cursor-pointer shadow-xs"
-                    title="Switch Learner Profile / Learn with Friend"
-                  >
-                    <div className={`w-5 h-5 rounded-md bg-gradient-to-tr ${currentProfile.avatarColor} flex items-center justify-center text-[10px] font-bold text-white shadow-xs`}>
-                      {currentProfile.name.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="font-semibold text-zinc-900 dark:text-white">{currentProfile.name}</span>
-                    <span className="text-zinc-400 dark:text-zinc-500 font-mono hidden sm:inline">@{currentProfile.username}</span>
-                    <span className="text-[10px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-200 dark:border-orange-500/20 hidden md:inline">
-                      Learn Together
+                    {/* Reset Progress Button */}
+                    <button
+                      onClick={resetProgress}
+                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-xs text-[var(--base-text-muted)] hover:text-[var(--base-text-primary)] transition-colors cursor-pointer shadow-xs"
+                      title="Reset Progress"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Reset</span>
+                    </button>
+
+                    {/* Import Progress Button */}
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-xs text-[var(--base-text-muted)] hover:text-[var(--base-text-primary)] transition-colors cursor-pointer shadow-xs"
+                      title="Import Progress"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Import</span>
+                    </button>
+
+                    {/* User Profile / Learner Account Pill */}
+                    <button
+                      onClick={() => setShowAuthModal(true)}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-xs text-zinc-700 dark:text-zinc-200 transition-colors cursor-pointer shadow-xs"
+                      title="Switch Learner Profile / Learn with Friend"
+                    >
+                      <div className={`w-5 h-5 rounded-md bg-gradient-to-tr ${currentProfile.avatarColor} flex items-center justify-center text-[10px] font-bold text-white shadow-xs`}>
+                        {currentProfile.name.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="font-semibold text-zinc-900 dark:text-white">{currentProfile.name}</span>
+                      <span className="text-zinc-400 dark:text-zinc-500 font-mono hidden sm:inline">@{currentProfile.username}</span>
+                      <span className="text-[10px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-200 dark:border-orange-500/20 hidden md:inline">
+                        Learn Together
+                      </span>
+                    </button>
+
+                    {/* Log Out Button */}
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-rose-500/10 hover:border-rose-500/30 text-xs text-zinc-500 dark:text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors cursor-pointer shadow-xs"
+                      title="Log Out of Dedicated Session"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Log Out</span>
+                    </button>
+
+                    <span className="hidden md:inline-flex shrink-0 items-center rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] px-3 py-1.5 text-xs text-[var(--base-text-muted)] shadow-xs">
+                      Last updated : December 13, 2025
                     </span>
-                  </button>
-
-                  {/* Log Out Button */}
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-rose-500/10 hover:border-rose-500/30 text-xs text-zinc-500 dark:text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors cursor-pointer shadow-xs"
-                    title="Log Out of Dedicated Session"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Log Out</span>
-                  </button>
-
-                  <span className="hidden md:inline-flex shrink-0 items-center rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] px-3 py-1.5 text-xs text-[var(--base-text-muted)] shadow-xs">
-                    Last updated : December 13, 2025
-                  </span>
+                  </div>
                 </div>
-              </div>
 
               {/* Subtitle & Know More */}
               <div className="self-stretch justify-start text-sm">
@@ -440,6 +461,15 @@ export function App() {
             </div>
           )}
         </main>
+
+          {/* Authentic Right Sidebar with Striver's Quote Card */}
+          <RightSidebar
+            currentProfile={currentProfile}
+            totalSolved={stats.solved}
+            totalProblems={stats.total}
+            onOpenAuth={() => setShowAuthModal(true)}
+          />
+        </div>
       </div>
 
       {/* Problem Coding & Notes Workspace (Exact 1:1 takeUforward Plus IDE) */}

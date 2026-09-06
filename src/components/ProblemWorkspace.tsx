@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   X, Play, Copy, Check, Save, RotateCcw, ExternalLink, 
-  Code2, BookOpen, Video, FileText, Star, Sparkles, Terminal,
-  ChevronLeft, ChevronRight, Maximize2, Minimize2, Lightbulb,
-  CheckCircle2, XCircle, AlertTriangle, Send, History
+  BookOpen, Video, FileText, Star, Sparkles, Terminal,
+  ChevronLeft, ChevronRight, ChevronDown, Maximize2, Minimize2, Lightbulb,
+  CheckCircle2, XCircle, AlertTriangle, Send, History,
+  ThumbsUp, ThumbsDown, Clock, MessageSquare, FileEdit
 } from 'lucide-react';
 import type { Problem, Language, ProblemStatus, SubmissionRecord } from '../types/dsa';
 import { getProblemDetail } from '../data/problemsData';
@@ -88,16 +89,35 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
     return getProblemDetail(problem.id, problem.plus);
   }, [problem.id, problem.plus]);
 
-  // Code state
-  const [selectedLang, setSelectedLang] = useState<Language>('python');
+  // Code state - default to Java matching screenshot
+  const [selectedLang, setSelectedLang] = useState<Language>('java');
   const [code, setCode] = useState<string>('');
-  const [fontSize, setFontSize] = useState<number>(13);
+  const [fontSize, setFontSize] = useState<number>(14);
   const [userNotes, setUserNotes] = useState<string>(notes);
-  const [activeLeftTab, setActiveLeftTab] = useState<'description' | 'editorial' | 'submissions' | 'notes'>('description');
-  const [activeRightTab, setActiveRightTab] = useState<'testcase' | 'result'>('testcase');
+  const [activeLeftTab, setActiveLeftTab] = useState<'description' | 'editorial' | 'submissions' | 'discussion' | 'notes'>('description');
   const [selectedTestCaseIdx, setSelectedTestCaseIdx] = useState<number>(0);
   const [customInput, setCustomInput] = useState<string>('');
   const [isCustomTab, setIsCustomTab] = useState<boolean>(false);
+
+  // Concept quiz state ("Now your turn!")
+  const [quizAnswer, setQuizAnswer] = useState<string | null>(null);
+
+  // Feedback state
+  const [likes, setLikes] = useState<number>(18);
+  const [hasLiked, setHasLiked] = useState<boolean>(false);
+
+  // Active coding study timer
+  const [timerSeconds, setTimerSeconds] = useState<number>(0);
+  useEffect(() => {
+    const timer = setInterval(() => setTimerSeconds(s => s + 1), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTimer = useMemo(() => {
+    const mins = Math.floor(timerSeconds / 60);
+    const secs = timerSeconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }, [timerSeconds]);
 
   // Runner state
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -208,7 +228,6 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
   // In-browser Sandbox Runner
   const runCode = async () => {
     setIsRunning(true);
-    setActiveRightTab('result');
     setIsConsoleExpanded(true);
     setConsoleOutput('Running test in browser sandbox...\n');
     setRunStatus('idle');
@@ -314,7 +333,6 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
   // Full Submit Handler
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    setActiveRightTab('result');
     setIsConsoleExpanded(true);
     setConsoleOutput('Evaluating solution against all test cases...\n');
     setRunStatus('idle');
@@ -611,60 +629,72 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
       {/* MAIN TWO-COLUMN WORKSPACE */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
         {/* LEFT COLUMN: Problem Details, Editorial, Submissions, Notes */}
-        <div className="w-full md:w-1/2 flex flex-col h-full border-b md:border-b-0 md:border-r border-[#232326] bg-[#0f0f11] min-w-0">
-          {/* Tab Header */}
-          <div className="flex items-center px-4 bg-[#141416] border-b border-[#232326] text-xs font-medium shrink-0 overflow-x-auto">
+        <div className="w-full md:w-1/2 flex flex-col h-full border-b md:border-b-0 md:border-r border-zinc-200/80 dark:border-[#232326] bg-white dark:bg-[#0f0f11] min-w-0">
+          {/* Tab Header matching Image 2 */}
+          <div className="flex items-center px-4 bg-white dark:bg-[#141416] border-b border-zinc-200/80 dark:border-[#232326] text-xs font-medium shrink-0 overflow-x-auto gap-1">
             <button
               onClick={() => setActiveLeftTab('description')}
-              className={`flex items-center gap-2 py-3 px-3 border-b-2 transition-colors cursor-pointer shrink-0 ${
+              className={`flex items-center gap-2 py-3 px-3.5 border-b-2 transition-all cursor-pointer shrink-0 ${
                 activeLeftTab === 'description'
-                  ? 'text-[#ea763f] border-[#ea763f] font-semibold'
-                  : 'text-zinc-400 border-transparent hover:text-zinc-200'
+                  ? 'text-[#d97706] border-[#d97706] font-semibold'
+                  : 'text-zinc-500 border-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
               }`}
             >
-              <FileText className="w-3.5 h-3.5" />
+              <FileText className="w-3.5 h-3.5 text-[#d97706]" />
               <span>Description</span>
             </button>
 
             <button
               onClick={() => setActiveLeftTab('editorial')}
-              className={`flex items-center gap-2 py-3 px-3 border-b-2 transition-colors cursor-pointer shrink-0 ${
+              className={`flex items-center gap-2 py-3 px-3.5 border-b-2 transition-all cursor-pointer shrink-0 ${
                 activeLeftTab === 'editorial'
-                  ? 'text-[#ea763f] border-[#ea763f] font-semibold'
-                  : 'text-zinc-400 border-transparent hover:text-zinc-200'
+                  ? 'text-[#10b981] border-[#10b981] font-semibold'
+                  : 'text-zinc-500 border-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
               }`}
             >
-              <Lightbulb className="w-3.5 h-3.5" />
+              <BookOpen className="w-3.5 h-3.5 text-[#10b981]" />
               <span>Editorial</span>
             </button>
 
             <button
               onClick={() => setActiveLeftTab('submissions')}
-              className={`flex items-center gap-2 py-3 px-3 border-b-2 transition-colors cursor-pointer shrink-0 ${
+              className={`flex items-center gap-2 py-3 px-3.5 border-b-2 transition-all cursor-pointer shrink-0 ${
                 activeLeftTab === 'submissions'
-                  ? 'text-[#ea763f] border-[#ea763f] font-semibold'
-                  : 'text-zinc-400 border-transparent hover:text-zinc-200'
+                  ? 'text-[#3b82f6] border-[#3b82f6] font-semibold'
+                  : 'text-zinc-500 border-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
               }`}
             >
-              <History className="w-3.5 h-3.5" />
+              <Clock className="w-3.5 h-3.5 text-[#3b82f6]" />
               <span>Submissions {submissions.length > 0 && `(${submissions.length})`}</span>
             </button>
 
             <button
-              onClick={() => setActiveLeftTab('notes')}
-              className={`flex items-center gap-2 py-3 px-3 border-b-2 transition-colors cursor-pointer shrink-0 ${
-                activeLeftTab === 'notes'
-                  ? 'text-[#ea763f] border-[#ea763f] font-semibold'
-                  : 'text-zinc-400 border-transparent hover:text-zinc-200'
+              onClick={() => setActiveLeftTab('discussion')}
+              className={`flex items-center gap-2 py-3 px-3.5 border-b-2 transition-all cursor-pointer shrink-0 ${
+                activeLeftTab === 'discussion'
+                  ? 'text-[#8b5cf6] border-[#8b5cf6] font-semibold'
+                  : 'text-zinc-500 border-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5" />
+              <MessageSquare className="w-3.5 h-3.5 text-[#8b5cf6]" />
+              <span>Discussion</span>
+            </button>
+
+            <button
+              onClick={() => setActiveLeftTab('notes')}
+              className={`flex items-center gap-2 py-3 px-3.5 border-b-2 transition-all cursor-pointer shrink-0 ${
+                activeLeftTab === 'notes'
+                  ? 'text-[#ea763f] border-[#ea763f] font-semibold'
+                  : 'text-zinc-500 border-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
+              }`}
+            >
+              <FileEdit className="w-3.5 h-3.5 text-[#ea763f]" />
               <span>Notes</span>
             </button>
           </div>
 
           {/* Left Tab Body */}
-          <div className="flex-1 overflow-y-auto p-5 sm:p-6 min-h-0 text-zinc-200 text-sm leading-relaxed">
+          <div className="flex-1 overflow-y-auto p-5 sm:p-6 min-h-0 text-zinc-800 dark:text-zinc-200 text-sm leading-relaxed">
             {/* TAB 1: DESCRIPTION */}
             {activeLeftTab === 'description' && (
               <div className="space-y-6 max-w-3xl">
@@ -674,20 +704,33 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                   <span>&gt;</span>
                   <span>{problem.stepTitle}</span>
                   <span>&gt;</span>
-                  <span className="text-zinc-300">{problem.subStepTitle}</span>
+                  <span className="text-zinc-500 dark:text-zinc-300">{problem.subStepTitle}</span>
                 </div>
 
-                {/* Problem Name & Tags */}
+                {/* Problem Name & Badges matching Image 2 */}
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white mb-2">
                     {detail?.name || problem.title}
                   </h2>
                   <div className="flex items-center gap-2 flex-wrap">
+                    <button className="text-xs font-semibold text-orange-600 bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 px-3 py-1 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-500/20 transition-colors cursor-pointer">
+                      Subscribe to TUF+
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (detail?.hints?.length) {
+                          setExpandedHints({ 0: true });
+                        }
+                      }}
+                      className="text-xs font-medium text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-3 py-1 rounded-lg transition-colors cursor-pointer"
+                    >
+                      Hints
+                    </button>
+                    <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-lg">
+                      Company
+                    </span>
                     <span className={`text-xs px-2.5 py-0.5 rounded-full border font-medium ${difficultyColors[problem.difficulty]}`}>
                       {problem.difficulty}
-                    </span>
-                    <span className="text-xs text-zinc-400 bg-zinc-800/60 px-2 py-0.5 rounded border border-white/5">
-                      100% Free &amp; Unlocked
                     </span>
                   </div>
                 </div>
@@ -797,6 +840,57 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                     </div>
                   </div>
                 )}
+
+                {/* Concept Quiz: Now your turn! (matching Image 2) */}
+                <div className="space-y-3 pt-3">
+                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white tracking-wide">
+                    Now your turn!
+                  </h3>
+                  <div className="p-4 rounded-xl bg-white dark:bg-[#141416] border border-zinc-200/80 dark:border-zinc-800 shadow-2xs space-y-3">
+                    <div className="text-xs font-mono text-zinc-600 dark:text-zinc-300">
+                      <span className="font-semibold text-zinc-800 dark:text-zinc-200">Input:</span> marks = 70
+                    </div>
+                    <div className="text-xs font-mono">
+                      <span className="font-semibold text-zinc-800 dark:text-zinc-200">Output: </span>
+                      <span className="text-[#ea763f] font-semibold">Pick your answer</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                      {[
+                        { label: 'Grade C', correct: true },
+                        { label: 'Grade D', correct: false },
+                        { label: 'Grade E', correct: false },
+                        { label: 'Grade B', correct: false },
+                      ].map((opt) => {
+                        const isSelected = quizAnswer === opt.label;
+                        return (
+                          <button
+                            key={opt.label}
+                            onClick={() => setQuizAnswer(opt.label)}
+                            className={`flex items-center gap-3 p-2.5 rounded-xl border text-xs font-medium transition-all cursor-pointer text-left ${
+                              isSelected
+                                ? opt.correct
+                                  ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-400 text-emerald-800 dark:text-emerald-300'
+                                  : 'bg-rose-50 dark:bg-rose-500/10 border-rose-400 text-rose-800 dark:text-rose-300'
+                                : 'bg-zinc-50 dark:bg-zinc-800/60 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                            }`}
+                          >
+                            <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                              isSelected
+                                ? opt.correct
+                                  ? 'border-emerald-500 bg-emerald-500 text-white'
+                                  : 'border-rose-500 bg-rose-500 text-white'
+                                : 'border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700'
+                            }`}>
+                              {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                            </span>
+                            <span>{opt.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -958,7 +1052,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                           onClick={() => {
                             setCode(sub.code);
                             setSelectedLang(sub.language);
-                            setActiveRightTab('result');
+                            setIsConsoleExpanded(true);
                           }}
                           className="px-3 py-1 text-xs text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer shrink-0"
                         >
@@ -1020,73 +1114,181 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                   value={userNotes}
                   onChange={e => setUserNotes(e.target.value)}
                   placeholder="Write your revision notes, interview takeaways, and insights here..."
-                  className="w-full flex-1 min-h-[350px] p-4 bg-[#141416] border border-white/10 rounded-xl text-zinc-200 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-[#ea763f] resize-none leading-relaxed"
+                  className="w-full flex-1 min-h-[350px] p-4 bg-zinc-50 dark:bg-[#141416] border border-zinc-200 dark:border-white/10 rounded-xl text-zinc-800 dark:text-zinc-200 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-[#ea763f] resize-none leading-relaxed"
                 />
               </div>
             )}
           </div>
+
+          {/* Bottom Bar of Left Column (matching Image 2) */}
+          <div className="h-11 px-4 bg-white dark:bg-[#141416] border-t border-zinc-200/80 dark:border-[#232326] flex items-center justify-between text-xs text-zinc-500 shrink-0">
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => {
+                  setLikes(l => l + (hasLiked ? -1 : 1));
+                  setHasLiked(!hasLiked);
+                }}
+                className={`flex items-center gap-1.5 px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer ${
+                  hasLiked ? 'text-orange-600 font-semibold' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                }`}
+              >
+                <ThumbsUp className="w-3.5 h-3.5" />
+                <span>{likes}</span>
+              </button>
+              <button className="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
+                <ThumbsDown className="w-3.5 h-3.5" />
+              </button>
+              <button 
+                onClick={() => setActiveLeftTab('editorial')}
+                className="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                title="View Hints & Editorial"
+              >
+                <Lightbulb className="w-3.5 h-3.5" />
+              </button>
+              <button 
+                onClick={() => setActiveLeftTab('notes')}
+                className="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                title="Open Notes"
+              >
+                <FileEdit className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
+                disabled={!prevProblem}
+                onClick={() => prevProblem && onNavigateProblem(prevProblem)}
+                className="p-1 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-white disabled:opacity-30 cursor-pointer"
+                title="Previous Problem"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                disabled={!nextProblem}
+                onClick={() => nextProblem && onNavigateProblem(nextProblem)}
+                className="p-1 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-white disabled:opacity-30 cursor-pointer"
+                title="Next Problem"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* RIGHT COLUMN: Code Studio & Execution Console */}
-        <div className="w-full md:w-1/2 flex flex-col h-full bg-[#0d0d0e] min-w-0">
-          {/* Editor Top Toolbar */}
-          <div className="h-11 px-4 bg-[#141416] border-b border-[#232326] flex items-center justify-between gap-2 shrink-0">
-            {/* Language Selector */}
-            <div className="flex items-center bg-[#0d0d0e] p-0.5 rounded-lg border border-white/5 text-xs">
-              {(['python', 'cpp', 'java', 'javascript'] as Language[]).map(lang => (
-                <button
-                  key={lang}
-                  onClick={() => setSelectedLang(lang)}
-                  className={`px-2.5 py-1 rounded-md capitalize font-medium transition-colors cursor-pointer ${
-                    selectedLang === lang
-                      ? 'bg-[#ea763f] text-white shadow-sm'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  {lang === 'javascript' ? 'JS' : lang === 'cpp' ? 'C++' : lang}
-                </button>
-              ))}
+        <div className="w-full md:w-1/2 flex flex-col h-full bg-white dark:bg-[#0d0d0e] min-w-0 border-l border-zinc-200/80 dark:border-[#232326]">
+          {/* Editor Top Toolbar matching Image 2 */}
+          <div className="h-12 px-4 bg-white dark:bg-[#141416] border-b border-zinc-200/80 dark:border-[#232326] flex items-center justify-between gap-3 shrink-0">
+            {/* Language Selector Dropdown Pill matching Image 2 */}
+            <div className="relative">
+              <select
+                value={selectedLang}
+                onChange={e => setSelectedLang(e.target.value as Language)}
+                className="h-8 pl-3 pr-7 text-xs font-semibold rounded-lg border border-zinc-200/80 dark:border-zinc-700 bg-[#f4f4f5] dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 appearance-none cursor-pointer focus:outline-none focus:border-orange-500 shadow-2xs"
+              >
+                <option value="java">Java</option>
+                <option value="python">Python</option>
+                <option value="cpp">C++</option>
+                <option value="javascript">JavaScript</option>
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
-            {/* Editor Action Buttons */}
-            <div className="flex items-center gap-1.5">
-              {/* Java Quick Import Fix */}
-              {selectedLang === 'java' && !code.includes('import java.util') && (
-                <button
-                  onClick={() => {
-                    const newCode = `import java.util.*;\nimport java.io.*;\n\n` + code;
-                    setCode(newCode);
-                    onSaveCode('java', newCode);
-                  }}
-                  className="flex items-center gap-1 px-2 py-0.5 text-[11px] bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded transition-colors cursor-pointer"
-                  title="Auto-import java.util.* and java.io.*"
-                >
-                  <Sparkles className="w-3 h-3 text-amber-400" />
-                  <span>+ Fix Imports</span>
-                </button>
-              )}
+            {/* Center/Right Actions: Timer, Format, Copy, Reset, Green Run */}
+            <div className="flex items-center gap-2">
+              {/* Study Timer matching Image 2 */}
+              <div 
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono text-zinc-500 dark:text-zinc-400 bg-[#f4f4f5] dark:bg-zinc-800/80 border border-zinc-200/60 dark:border-zinc-700/60"
+                title="Active Coding Session Timer"
+              >
+                <Clock className="w-3.5 h-3.5 text-orange-500" />
+                <span>{formattedTimer}</span>
+              </div>
 
-              {/* C++ Quick Header Fix */}
-              {selectedLang === 'cpp' && !code.includes('bits/stdc++') && (
-                <button
-                  onClick={() => {
-                    const newCode = `#include <bits/stdc++.h>\nusing namespace std;\n\n` + code;
-                    setCode(newCode);
-                    onSaveCode('cpp', newCode);
-                  }}
-                  className="flex items-center gap-1 px-2 py-0.5 text-[11px] bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/30 rounded transition-colors cursor-pointer"
-                  title="Auto-include <bits/stdc++.h>"
-                >
-                  <Sparkles className="w-3 h-3 text-sky-400" />
-                  <span>+ Fix Headers</span>
-                </button>
-              )}
+              {/* Reset to starter code */}
+              <button
+                onClick={handleResetCode}
+                className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                title="Reset Starter Code"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
 
-              {/* Font Size Selector */}
+              {/* Copy Code */}
+              <button
+                onClick={handleCopyCode}
+                className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                title="Copy Code"
+              >
+                {hasCopied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+              </button>
+
+              {/* Green Run Rocket Button matching Image 2 */}
+              <button
+                onClick={runCode}
+                disabled={isRunning}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white shadow-xs transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                title="Run Solution (Ctrl + Enter)"
+              >
+                <Play className={`w-3.5 h-3.5 ${isRunning ? 'animate-spin' : 'fill-white'}`} />
+                <span>{isRunning ? 'Running...' : 'Run'}</span>
+              </button>
+
+              {/* Submit Button */}
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-xs transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                title="Submit & Evaluate Testcases"
+              >
+                <Send className={`w-3.5 h-3.5 ${isSubmitting ? 'animate-spin' : ''}`} />
+                <span>{isSubmitting ? 'Evaluating...' : 'Submit'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Tab bar matching Image 2: Tab-1 + */}
+          <div className="h-8 px-4 bg-[#f8fafc] dark:bg-[#121214] border-b border-zinc-200/80 dark:border-[#232326] flex items-center gap-1.5 text-xs shrink-0">
+            <div className="h-7 px-3 rounded-t-md bg-white dark:bg-[#0d0d0e] border-t border-x border-zinc-200/80 dark:border-zinc-800 font-medium text-zinc-800 dark:text-zinc-200 flex items-center gap-2 shadow-2xs">
+              <span>Tab-1</span>
+            </div>
+            <button className="h-6 w-6 rounded flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 cursor-pointer text-xs font-bold">
+              +
+            </button>
+          {/* Code Editor Body (with Line Numbers & Editor Toolbar Footer) */}
+          <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-[#0d0d0e] overflow-hidden relative">
+            <div className="flex-1 flex min-h-0 overflow-hidden">
+              {/* Line Gutter */}
+              <div 
+                className="w-12 bg-[#f8fafc] dark:bg-[#121214] text-zinc-400 dark:text-zinc-600 font-mono text-right pr-3 py-4 select-none border-r border-zinc-200/80 dark:border-white/5 overflow-hidden shrink-0"
+                style={{ fontSize: `${fontSize}px`, lineHeight: `${fontSize * 1.5}px` }}
+              >
+                {Array.from({ length: lineCount }, (_, i) => (
+                  <div key={i}>{i + 1}</div>
+                ))}
+              </div>
+
+              {/* Textarea Code Input */}
+              <div className="flex-1 relative h-full overflow-hidden bg-white dark:bg-[#0d0d0e]">
+                <textarea
+                  ref={textareaRef}
+                  value={code}
+                  onChange={e => setCode(e.target.value)}
+                  onKeyDown={handleEditorKeyDown}
+                  spellCheck={false}
+                  style={{ fontSize: `${fontSize}px`, lineHeight: `${fontSize * 1.5}px` }}
+                  className="w-full h-full p-4 font-mono text-zinc-900 dark:text-zinc-200 bg-white dark:bg-[#0d0d0e] focus:outline-none resize-none selection:bg-[#ea763f]/20 leading-normal overflow-y-auto whitespace-pre"
+                  placeholder="Write your solution here..."
+                />
+              </div>
+            </div>
+
+            {/* Bottom Bar of Editor (Font size, format, fullscreen matching Image 2) */}
+            <div className="h-8 px-4 bg-[#f8fafc] dark:bg-[#141416] border-t border-zinc-200/80 dark:border-[#232326] flex items-center justify-end gap-3 text-xs text-zinc-500 shrink-0">
               <select
                 value={fontSize}
                 onChange={e => setFontSize(Number(e.target.value))}
-                className="bg-[#1c1c1f] text-zinc-300 text-[11px] rounded px-2 py-1 border border-white/5 focus:outline-none cursor-pointer hidden sm:block"
+                className="bg-transparent text-zinc-500 dark:text-zinc-400 text-xs focus:outline-none cursor-pointer"
                 title="Editor Font Size"
               >
                 <option value={12}>12px</option>
@@ -1094,219 +1296,144 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                 <option value={14}>14px</option>
                 <option value={16}>16px</option>
               </select>
-
-              <button
-                onClick={handleCopyCode}
-                className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors cursor-pointer"
-                title="Copy Code"
+              <button 
+                onClick={() => setIsFullscreen(f => !f)} 
+                className="p-1 hover:text-zinc-800 dark:hover:text-white transition-colors cursor-pointer"
+                title="Toggle Fullscreen"
               >
-                {hasCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
-
-              <button
-                onClick={handleResetCode}
-                className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition-colors cursor-pointer"
-                title="Reset to Starter Code"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
-
-              <button
-                onClick={handleSave}
-                className="flex items-center gap-1 px-2.5 py-1 text-xs text-zinc-300 hover:text-white bg-[#1c1c1f] hover:bg-[#27272a] rounded transition-colors cursor-pointer"
-                title="Save Code (Ctrl+S)"
-              >
-                <Save className="w-3.5 h-3.5 text-sky-400" />
-                <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save'}</span>
+                <Maximize2 className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
 
-          {/* Code Editor Body (Monaco-Style with Line Gutter) */}
-          <div className="flex-1 flex min-h-0 bg-[#0d0d0e] overflow-hidden relative">
-            {/* Line Gutter */}
-            <div 
-              className="w-12 bg-[#121214] text-zinc-600 font-mono text-right pr-3 py-4 select-none border-r border-white/5 overflow-hidden shrink-0"
-              style={{ fontSize: `${fontSize}px`, lineHeight: `${fontSize * 1.5}px` }}
-            >
-              {Array.from({ length: lineCount }, (_, i) => (
-                <div key={i}>{i + 1}</div>
-              ))}
-            </div>
-
-            {/* Textarea Code Input */}
-            <div className="flex-1 relative h-full overflow-hidden">
-              <textarea
-                ref={textareaRef}
-                value={code}
-                onChange={e => setCode(e.target.value)}
-                onKeyDown={handleEditorKeyDown}
-                spellCheck={false}
-                style={{ fontSize: `${fontSize}px`, lineHeight: `${fontSize * 1.5}px` }}
-                className="w-full h-full p-4 font-mono text-zinc-200 bg-[#0d0d0e] focus:outline-none resize-none selection:bg-[#ea763f]/30 leading-normal overflow-y-auto whitespace-pre"
-                placeholder="Write your solution here..."
-              />
-            </div>
-          </div>
-
-          {/* BOTTOM SPLIT: Testcase & Console Output Panel */}
-          <div className={`border-t border-[#232326] bg-[#121214] flex flex-col transition-all duration-200 ${
+          {/* BOTTOM SPLIT: Test Cases Panel matching Image 2 */}
+          <div className={`border-t border-zinc-200/80 dark:border-[#232326] bg-white dark:bg-[#121214] flex flex-col transition-all duration-200 ${
             isConsoleExpanded ? 'h-64 sm:h-72' : 'h-11'
           }`}>
-            {/* Console Tabs & Control Header */}
-            <div className="h-11 px-4 bg-[#141416] border-b border-[#232326] flex items-center justify-between gap-2 shrink-0">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => { setActiveRightTab('testcase'); setIsConsoleExpanded(true); }}
-                  className={`flex items-center gap-1.5 py-2 text-xs font-semibold border-b-2 transition-colors cursor-pointer ${
-                    activeRightTab === 'testcase' && isConsoleExpanded
-                      ? 'text-[#ea763f] border-[#ea763f]'
-                      : 'text-zinc-400 border-transparent hover:text-zinc-200'
-                  }`}
-                >
-                  <Code2 className="w-3.5 h-3.5" />
-                  <span>Testcase</span>
-                </button>
-
-                <button
-                  onClick={() => { setActiveRightTab('result'); setIsConsoleExpanded(true); }}
-                  className={`flex items-center gap-1.5 py-2 text-xs font-semibold border-b-2 transition-colors cursor-pointer ${
-                    activeRightTab === 'result' && isConsoleExpanded
-                      ? 'text-[#ea763f] border-[#ea763f]'
-                      : 'text-zinc-400 border-transparent hover:text-zinc-200'
-                  }`}
-                >
+            {/* Header: Purple Test Cases badge & collapse toggle */}
+            <div className="h-11 px-4 bg-[#fafafa] dark:bg-[#141416] border-b border-zinc-200/80 dark:border-[#232326] flex items-center justify-between gap-2 shrink-0 select-none">
+              <div className="flex items-center gap-2">
+                <span className="p-1 rounded bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400">
                   <Terminal className="w-3.5 h-3.5" />
-                  <span>Test Result</span>
-                  {runStatus === 'accepted' && <span className="w-2 h-2 rounded-full bg-emerald-400" />}
-                  {runStatus === 'error' && <span className="w-2 h-2 rounded-full bg-rose-400" />}
-                </button>
+                </span>
+                <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
+                  Test Cases
+                </span>
+                {runStatus === 'accepted' && (
+                  <span className="ml-2 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 rounded-full border border-emerald-200">
+                    Passed
+                  </span>
+                )}
+                {runStatus === 'error' && (
+                  <span className="ml-2 px-2 py-0.5 text-[10px] font-semibold text-rose-700 bg-rose-50 rounded-full border border-rose-200">
+                    Error
+                  </span>
+                )}
               </div>
 
-              {/* Action Buttons */}
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsConsoleExpanded(prev => !prev)}
-                  className="text-xs text-zinc-400 hover:text-white px-2 py-1 rounded hover:bg-zinc-800 transition-colors"
+                  className="p-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-white cursor-pointer"
+                  title={isConsoleExpanded ? "Collapse" : "Expand"}
                 >
-                  {isConsoleExpanded ? 'Minimize' : 'Console'}
-                </button>
-
-                <button
-                  onClick={runCode}
-                  disabled={isRunning}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs bg-[#1f1f22] hover:bg-[#2b2b30] text-zinc-200 border border-white/10 rounded-lg transition-colors font-semibold cursor-pointer disabled:opacity-50"
-                  title="Run code (Ctrl + Enter)"
-                >
-                  <Play className={`w-3.5 h-3.5 ${isRunning ? 'animate-spin' : 'fill-current'}`} />
-                  <span>{isRunning ? 'Running...' : 'Run'}</span>
-                </button>
-
-                <button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="flex items-center gap-1.5 px-4 py-1.5 text-xs bg-[#ea763f] hover:bg-[#d9622b] text-white rounded-lg transition-colors font-bold cursor-pointer shadow-md disabled:opacity-50"
-                  title="Submit Solution"
-                >
-                  <Send className={`w-3.5 h-3.5 ${isSubmitting ? 'animate-spin' : ''}`} />
-                  <span>{isSubmitting ? 'Evaluating...' : 'Submit'}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isConsoleExpanded ? '' : 'rotate-180'}`} />
                 </button>
               </div>
             </div>
 
-            {/* Console Content (when expanded) */}
+            {/* Test Case Subtabs & Input Field matching Image 2 */}
             {isConsoleExpanded && (
-              <div className="flex-1 min-h-0 overflow-y-auto p-4 font-mono text-xs text-zinc-300 bg-[#0d0d0e]">
-                {activeRightTab === 'testcase' ? (
-                  /* Testcase Selector & Input */
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {testcases.map((_, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => { setSelectedTestCaseIdx(idx); setIsCustomTab(false); }}
-                          className={`px-3 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
-                            !isCustomTab && selectedTestCaseIdx === idx
-                              ? 'bg-zinc-700 text-white'
-                              : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
-                          }`}
-                        >
-                          Case {idx + 1}
-                        </button>
-                      ))}
+              <div className="flex-1 min-h-0 overflow-y-auto p-4 text-xs font-mono bg-white dark:bg-[#0d0d0e]">
+                {/* Case 1 (orange pill), Case 2, + and Reset on right */}
+                <div className="flex items-center justify-between gap-2 pb-3 border-b border-zinc-100 dark:border-zinc-800/80 mb-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {testcases.map((_, idx) => (
                       <button
-                        onClick={() => setIsCustomTab(true)}
-                        className={`px-3 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
-                          isCustomTab
-                            ? 'bg-zinc-700 text-white'
-                            : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+                        key={idx}
+                        onClick={() => { setSelectedTestCaseIdx(idx); setIsCustomTab(false); }}
+                        className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                          !isCustomTab && selectedTestCaseIdx === idx
+                            ? 'bg-[#ffedd5] text-[#ea763f] dark:bg-orange-500/20 dark:text-orange-400 shadow-2xs'
+                            : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                         }`}
                       >
-                        + Custom Case
+                        Case {idx + 1}
                       </button>
-                    </div>
+                    ))}
+                    <button
+                      onClick={() => setIsCustomTab(true)}
+                      className={`px-2.5 py-1 text-xs font-bold rounded cursor-pointer transition-colors ${
+                        isCustomTab
+                          ? 'bg-[#ffedd5] text-[#ea763f] dark:bg-orange-500/20 dark:text-orange-400 shadow-2xs'
+                          : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                      }`}
+                      title="Add Custom Case"
+                    >
+                      +
+                    </button>
+                  </div>
 
-                    {isCustomTab ? (
-                      <div>
-                        <div className="text-[11px] text-zinc-400 mb-1">Custom Input:</div>
-                        <textarea
-                          value={customInput}
-                          onChange={e => setCustomInput(e.target.value)}
-                          placeholder="Type custom test input parameters..."
-                          className="w-full h-24 p-3 bg-[#141416] border border-white/10 rounded-lg text-zinc-200 text-xs font-mono focus:outline-none resize-none"
-                        />
+                  <button
+                    onClick={() => {
+                      setSelectedTestCaseIdx(0);
+                      setIsCustomTab(false);
+                      setCustomInput('');
+                      setConsoleOutput('');
+                      setReturnValue(null);
+                      setRunStatus('idle');
+                    }}
+                    className="flex items-center gap-1 text-[11px] text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 hover:underline cursor-pointer"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Reset</span>
+                  </button>
+                </div>
+
+                {/* Custom Input, Console Output, or Testcase Parameters */}
+                {isCustomTab ? (
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-bold tracking-wider text-zinc-400 uppercase">
+                      Custom Test Case Input:
+                    </div>
+                    <textarea
+                      value={customInput}
+                      onChange={e => setCustomInput(e.target.value)}
+                      placeholder="Enter custom inputs (e.g. MARKS = 95)..."
+                      className="w-full h-24 p-3 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-[#f8fafc] dark:bg-[#141416] text-zinc-800 dark:text-zinc-200 text-xs font-mono focus:outline-none resize-none"
+                    />
+                  </div>
+                ) : consoleOutput || returnValue ? (
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+                      <span>Execution Output:</span>
+                      {executionTime !== null && (
+                        <span className="text-zinc-500 font-normal">Runtime: {executionTime}ms</span>
+                      )}
+                    </div>
+                    {consoleOutput && (
+                      <div className="p-3 bg-[#f8fafc] dark:bg-[#141416] border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-800 dark:text-zinc-200 text-xs font-mono whitespace-pre-wrap">
+                        {consoleOutput}
                       </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {Object.entries(activeTestcase?.inputs || {}).map(([key, val]) => (
-                          <div key={key}>
-                            <div className="text-[11px] text-zinc-400 mb-1">{key} =</div>
-                            <div className="p-2.5 bg-[#141416] border border-white/5 rounded-lg text-zinc-200 text-xs font-mono break-all">
-                              {val}
-                            </div>
-                          </div>
-                        ))}
+                    )}
+                    {returnValue && (
+                      <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl text-emerald-800 dark:text-emerald-300 text-xs font-mono whitespace-pre-wrap">
+                        Return: {returnValue}
                       </div>
                     )}
                   </div>
                 ) : (
-                  /* Test Result Tab */
-                  <div className="space-y-3">
-                    {runStatus !== 'idle' && (
-                      <div className={`p-3 rounded-lg border flex items-center justify-between ${
-                        runStatus === 'accepted'
-                          ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                          : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
-                      }`}>
-                        <div className="flex items-center gap-2 font-bold text-sm">
-                          {runStatus === 'accepted' ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                          <span>{runStatus === 'accepted' ? 'Accepted' : 'Runtime / Error'}</span>
+                  <div className="space-y-2">
+                    {Object.entries(activeTestcase?.inputs || { 'MARKS': '95' }).map(([key, val]) => (
+                      <div key={key} className="space-y-1">
+                        <div className="text-[11px] font-bold tracking-wider text-zinc-400 uppercase">
+                          {key}
                         </div>
-                        {executionTime !== null && (
-                          <span className="text-xs font-mono text-zinc-400">
-                            Runtime: {executionTime} ms
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    <div>
-                      <div className="text-[11px] text-zinc-400 mb-1">Stdout Output:</div>
-                      <div className="p-3 bg-[#141416] border border-white/5 rounded-lg text-zinc-300 font-mono text-xs whitespace-pre-wrap min-h-[60px]">
-                        {consoleOutput || (
-                          <span className="text-zinc-600 italic">No output yet. Click &quot;Run&quot; or &quot;Submit&quot; to execute.</span>
-                        )}
-                      </div>
-                    </div>
-
-                    {returnValue && (
-                      <div>
-                        <div className="text-[11px] text-zinc-400 mb-1">Return Value:</div>
-                        <div className="p-3 bg-[#141416] border border-white/5 rounded-lg text-emerald-300 font-mono text-xs whitespace-pre-wrap">
-                          {returnValue}
+                        <div className="p-3 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-[#141416] text-zinc-800 dark:text-zinc-200 text-xs font-mono shadow-2xs">
+                          {val}
                         </div>
                       </div>
-                    )}
+                    ))}
                   </div>
                 )}
               </div>
@@ -1315,5 +1442,6 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };

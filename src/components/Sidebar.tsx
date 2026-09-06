@@ -1,14 +1,14 @@
 import React from 'react';
-import { House, FileText, Code2, Download, Upload, RotateCcw, Flame, LogOut } from 'lucide-react';
+import { House, FileText, Flame, LogOut } from 'lucide-react';
 import type { UserProfile } from '../types/dsa';
 import { ThemeToggle } from './ThemeToggle';
 
 interface SidebarProps {
   streak: number;
   currentProfile?: UserProfile;
-  onExport: () => void;
-  onImportClick: () => void;
-  onReset: () => void;
+  onExport?: () => void;
+  onImportClick?: () => void;
+  onReset?: () => void;
   onOpenAuth?: () => void;
   onLogout?: () => void;
 }
@@ -16,9 +16,6 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   streak,
   currentProfile,
-  onExport,
-  onImportClick,
-  onReset,
   onOpenAuth,
   onLogout,
 }) => {
@@ -63,83 +60,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-[10px] font-medium leading-none text-zinc-500 dark:text-zinc-400 group-hover:text-[var(--brand)]">Plus</span>
           </button>
 
-          {/* Track (Active) */}
+          {/* Sheet (Active) */}
           <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-[var(--brand)] bg-[var(--brand-bg-10)] border border-[var(--brand-bg-30)] shadow-xs transition-colors cursor-pointer"
-            title="Track / Sheets"
+            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-[#ea763f] bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 shadow-2xs transition-colors cursor-pointer"
+            title="Striver's A2Z Sheet"
           >
             <FileText className="w-5 h-5 mb-0.5 stroke-[2.2]" />
-            <span className="text-[10px] font-bold leading-none">Track</span>
-          </button>
-
-          {/* Practice */}
-          <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-zinc-400 hover:text-orange-600 dark:hover:text-white hover:bg-orange-500/10 dark:hover:bg-zinc-800/60 transition-colors group cursor-pointer"
-            title="Practice & Code Sandbox"
-          >
-            <Code2 className="w-5 h-5 mb-0.5" />
-            <span className="text-[10px] font-medium leading-none text-zinc-500 dark:text-zinc-400 group-hover:text-orange-600 dark:group-hover:text-white">Code</span>
+            <span className="text-[10px] font-bold leading-none">Sheet</span>
           </button>
         </nav>
       </div>
 
       {/* Bottom section: Streak, Backup, Reset */}
-      <div className="flex flex-col items-center gap-3 w-full pb-2">
+      <div className="flex flex-col items-center gap-2.5 w-full pb-3">
         {/* Streak */}
         <div 
-          className="flex flex-col items-center justify-center w-11 py-1 rounded-xl bg-orange-500/10 border border-orange-500/25 text-orange-500 dark:text-orange-400 shadow-xs"
+          className="flex flex-col items-center justify-center w-11 py-1 rounded-xl bg-orange-500/10 border border-orange-500/25 text-orange-500 dark:text-orange-400 shadow-2xs"
           title={`${streak} Days Streak`}
         >
           <Flame className="w-4 h-4 fill-orange-500 dark:fill-orange-400" />
           <span className="text-[10px] font-bold font-mono mt-0.5">{streak}d</span>
         </div>
 
-        {/* Export */}
-        <button
-          onClick={onExport}
-          className="p-2 rounded-xl text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-          title="Export Progress Backup (JSON)"
-        >
-          <Download className="w-4 h-4" />
-        </button>
-
-        {/* Import */}
-        <button
-          onClick={onImportClick}
-          className="p-2 rounded-xl text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-          title="Import Progress (JSON)"
-        >
-          <Upload className="w-4 h-4" />
-        </button>
-
-        {/* Reset */}
-        <button
-          onClick={onReset}
-          className="p-2 rounded-xl text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
-          title="Reset Progress"
-        >
-          <RotateCcw className="w-4 h-4" />
-        </button>
-
         {/* Theme Toggle Button */}
         <div className="my-0.5">
           <ThemeToggle variant="icon" />
         </div>
 
-        {/* User profile avatar button */}
+        {/* User profile avatar button - Circular outline matching takeUforward screenshot */}
         <button
           onClick={onOpenAuth}
-          className={`w-8 h-8 rounded-xl bg-gradient-to-tr ${currentProfile?.avatarColor || 'from-orange-500 to-amber-500'} flex items-center justify-center text-xs font-bold text-white shadow-sm mt-1 cursor-pointer hover:scale-110 transition-transform`}
+          className="w-9 h-9 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:border-orange-500 hover:text-orange-600 transition-all cursor-pointer shadow-2xs group"
           title={`${currentProfile?.name || 'User'} (@${currentProfile?.username || 'user'}) - Click to switch profile / learn with friend`}
         >
-          {currentProfile?.name?.charAt(0).toUpperCase() || 'A'}
+          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-400 to-amber-500 flex items-center justify-center text-[10px] font-bold text-white shadow-2xs">
+            {currentProfile?.name?.charAt(0).toUpperCase() || 'A'}
+          </div>
         </button>
 
         {/* Logout button */}
         {onLogout && (
           <button
             onClick={onLogout}
-            className="p-1.5 rounded-xl text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer mt-0.5"
+            className="p-1 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
             title="Log Out of Dedicated Session"
           >
             <LogOut className="w-3.5 h-3.5" />
