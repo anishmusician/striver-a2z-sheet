@@ -535,6 +535,29 @@ html.light {
     color: #64748b !important;
   }
 
+  /* Solid accent buttons and badges keep white text */
+  .bg-emerald-500,
+  .bg-emerald-600,
+  .bg-rose-500,
+  .bg-rose-600,
+  .bg-red-500,
+  .bg-red-600,
+  .bg-amber-500,
+  .bg-amber-600,
+  .bg-\[\#ea763f\],
+  .bg-\[\#ea763f\]:hover,
+  .bg-gradient-to-r,
+  .bg-emerald-500 *,
+  .bg-emerald-600 *,
+  .bg-rose-500 *,
+  .bg-rose-600 *,
+  .bg-red-500 *,
+  .bg-red-600 *,
+  .bg-\[\#ea763f\] *,
+  .bg-gradient-to-r * {
+    color: #ffffff !important;
+  }
+
   /* Borders */
   .border-white\/5,
   .border-white\/10,

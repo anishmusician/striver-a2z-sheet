@@ -749,13 +749,13 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
 
                 {/* Examples Section */}
                 <div className="space-y-4 pt-2">
-                  <h3 className="text-sm font-semibold text-white tracking-wide uppercase">
+                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-white tracking-wide uppercase">
                     Examples
                   </h3>
 
                   {detail?.example1 && (
                     <div className="tuf-example-card">
-                      <div className="text-xs font-semibold text-zinc-300 mb-2">Example 1:</div>
+                      <div className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Example 1:</div>
                       <div 
                         dangerouslySetInnerHTML={{ __html: detail.example1 }}
                         onClick={e => {
@@ -770,7 +770,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
 
                   {detail?.example2 && (
                     <div className="tuf-example-card">
-                      <div className="text-xs font-semibold text-zinc-300 mb-2">Example 2:</div>
+                      <div className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Example 2:</div>
                       <div 
                         dangerouslySetInnerHTML={{ __html: detail.example2 }}
                         onClick={e => {
@@ -785,7 +785,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
 
                   {detail?.example3 && (
                     <div className="tuf-example-card">
-                      <div className="text-xs font-semibold text-zinc-300 mb-2">Example 3:</div>
+                      <div className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Example 3:</div>
                       <div 
                         dangerouslySetInnerHTML={{ __html: detail.example3 }}
                         onClick={e => {
@@ -802,11 +802,11 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                 {/* Constraints Section */}
                 {detail?.constraints && (
                   <div className="space-y-2 pt-2">
-                    <h3 className="text-sm font-semibold text-white tracking-wide uppercase">
+                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-white tracking-wide uppercase">
                       Constraints
                     </h3>
                     <div 
-                      className="tuf-problem-content text-xs bg-[#141416] p-4 rounded-xl border border-white/5"
+                      className="tuf-problem-content text-xs bg-zinc-100 dark:bg-[#141416] p-4 rounded-xl border border-zinc-200 dark:border-white/5"
                       dangerouslySetInnerHTML={{ __html: detail.constraints }}
                     />
                   </div>
@@ -815,15 +815,15 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                 {/* Hints Accordion */}
                 {detail?.hints && detail.hints.length > 0 && (
                   <div className="space-y-2 pt-2">
-                    <h3 className="text-sm font-semibold text-white tracking-wide uppercase">
+                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-white tracking-wide uppercase">
                       Hints ({detail.hints.length})
                     </h3>
                     <div className="space-y-2">
                       {detail.hints.map((hint, idx) => (
-                        <div key={idx} className="border border-white/10 rounded-xl bg-[#141416] overflow-hidden">
+                        <div key={idx} className="border border-zinc-200 dark:border-white/10 rounded-xl bg-zinc-50 dark:bg-[#141416] overflow-hidden">
                           <button
                             onClick={() => toggleHint(idx)}
-                            className="w-full px-4 py-2.5 text-xs font-medium text-left text-zinc-300 hover:text-white flex items-center justify-between cursor-pointer"
+                            className="w-full px-4 py-2.5 text-xs font-medium text-left text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white flex items-center justify-between cursor-pointer"
                           >
                             <span>💡 Hint {idx + 1}</span>
                             <span className="text-zinc-500 text-xs">
@@ -831,7 +831,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                             </span>
                           </button>
                           {expandedHints[idx] && (
-                            <div className="px-4 py-3 text-xs text-zinc-300 bg-[#18181b] border-t border-white/5 leading-relaxed">
+                            <div className="px-4 py-3 text-xs text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-[#18181b] border-t border-zinc-200 dark:border-white/5 leading-relaxed">
                               {hint}
                             </div>
                           )}
@@ -898,11 +898,11 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
             {activeLeftTab === 'editorial' && (
               <div className="space-y-6 max-w-3xl">
                 <div>
-                  <h2 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-zinc-900 dark:text-white mb-1 flex items-center gap-2">
                     <Lightbulb className="w-5 h-5 text-[#ea763f]" />
                     <span>Editorial &amp; Multi-Approach Solution</span>
                   </h2>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     Comprehensive breakdown of approaches from Brute Force to Optimal with full Time and Space complexities.
                   </p>
                 </div>
@@ -915,8 +915,8 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                         <Video className="w-5 h-5" />
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-white">Striver&apos;s Video Solution</div>
-                        <div className="text-xs text-zinc-400">Step-by-step visual trace with whiteboard intuition</div>
+                        <div className="text-sm font-semibold text-zinc-900 dark:text-white">Striver&apos;s Video Solution</div>
+                        <div className="text-xs text-zinc-500 dark:text-zinc-400">Step-by-step visual trace with whiteboard intuition</div>
                       </div>
                     </div>
                     <button
@@ -930,21 +930,21 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
 
                 {/* Article Link */}
                 {problem.article && (
-                  <div className="p-4 bg-[#1a1a1d] border border-white/10 rounded-xl flex items-center justify-between gap-4">
+                  <div className="p-4 bg-zinc-50 dark:bg-[#1a1a1d] border border-zinc-200 dark:border-white/10 rounded-xl flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <div className="p-2.5 bg-[#ea763f] rounded-lg text-white">
                         <BookOpen className="w-5 h-5" />
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-white">Complete Editorial Article</div>
-                        <div className="text-xs text-zinc-400">In-depth mathematical proofs, diagrams &amp; multi-language code</div>
+                        <div className="text-sm font-semibold text-zinc-900 dark:text-white">Complete Editorial Article</div>
+                        <div className="text-xs text-zinc-500 dark:text-zinc-400">In-depth mathematical proofs, diagrams &amp; multi-language code</div>
                       </div>
                     </div>
                     <a
                       href={problem.article}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-[#262629] hover:bg-[#323236] text-white rounded-lg transition-colors cursor-pointer shrink-0"
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-zinc-900 dark:bg-[#262629] hover:bg-zinc-800 dark:hover:bg-[#323236] text-white rounded-lg transition-colors cursor-pointer shrink-0"
                     >
                       <span>Read Article</span>
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -954,44 +954,44 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
 
                 {/* Approach Breakdowns */}
                 <div className="space-y-4">
-                  <div className="p-4 bg-[#141416] border border-white/5 rounded-xl space-y-2">
+                  <div className="p-4 bg-zinc-50 dark:bg-[#141416] border border-zinc-200 dark:border-white/5 rounded-xl space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                      <span className="text-xs font-bold text-emerald-500 dark:text-emerald-400 uppercase tracking-wider">
                         1. Optimal Approach
                       </span>
-                      <span className="text-[11px] text-zinc-400 font-mono">
+                      <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
                         Time: O(N) • Space: O(1)
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-300 leading-relaxed">
+                    <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
                       Utilize the optimal two-pointer or hash map pattern to achieve linear time execution without redundant nested passes.
                     </p>
                   </div>
 
-                  <div className="p-4 bg-[#141416] border border-white/5 rounded-xl space-y-2">
+                  <div className="p-4 bg-zinc-50 dark:bg-[#141416] border border-zinc-200 dark:border-white/5 rounded-xl space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-sky-400 uppercase tracking-wider">
+                      <span className="text-xs font-bold text-sky-500 dark:text-sky-400 uppercase tracking-wider">
                         2. Better Approach
                       </span>
-                      <span className="text-[11px] text-zinc-400 font-mono">
+                      <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
                         Time: O(N log N) • Space: O(N)
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-300 leading-relaxed">
+                    <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
                       Sort the elements or apply binary search / priority queues to reduce search space logarithmically.
                     </p>
                   </div>
 
-                  <div className="p-4 bg-[#141416] border border-white/5 rounded-xl space-y-2">
+                  <div className="p-4 bg-zinc-50 dark:bg-[#141416] border border-zinc-200 dark:border-white/5 rounded-xl space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                      <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         3. Brute Force Approach
                       </span>
-                      <span className="text-[11px] text-zinc-400 font-mono">
+                      <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
                         Time: O(N²) • Space: O(1)
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-300 leading-relaxed">
+                    <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
                       Evaluate all pairs or subsets via nested loops to verify problem constraints.
                     </p>
                   </div>
@@ -1003,17 +1003,17 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
             {activeLeftTab === 'submissions' && (
               <div className="space-y-4 max-w-3xl">
                 <div>
-                  <h2 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                    <History className="w-5 h-5 text-emerald-400" />
+                  <h2 className="text-lg font-bold text-zinc-900 dark:text-white mb-1 flex items-center gap-2">
+                    <History className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
                     <span>Submission History</span>
                   </h2>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     Your past runs and submissions are preserved locally with full zero-credit privacy.
                   </p>
                 </div>
 
                 {submissions.length === 0 ? (
-                  <div className="p-8 text-center text-zinc-500 border border-dashed border-zinc-800 rounded-xl text-xs">
+                  <div className="p-8 text-center text-zinc-500 border border-dashed border-zinc-300 dark:border-zinc-800 rounded-xl text-xs">
                     No submissions recorded yet for this problem.
                     <br />
                     Click &quot;Run Code&quot; or &quot;Submit&quot; on the right to test your code!
@@ -1023,26 +1023,26 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                     {submissions.map((sub, idx) => (
                       <div 
                         key={sub.id || idx}
-                        className="p-3.5 bg-[#141416] border border-white/5 rounded-xl flex items-center justify-between gap-4"
+                        className="p-3.5 bg-zinc-50 dark:bg-[#141416] border border-zinc-200 dark:border-white/5 rounded-xl flex items-center justify-between gap-4"
                       >
                         <div className="flex items-center gap-3">
                           {sub.status === 'Accepted' ? (
-                            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400 shrink-0" />
                           ) : sub.status === 'Wrong Answer' ? (
-                            <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
+                            <XCircle className="w-5 h-5 text-rose-500 dark:text-rose-400 shrink-0" />
                           ) : (
-                            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
+                            <AlertTriangle className="w-5 h-5 text-amber-500 dark:text-amber-400 shrink-0" />
                           )}
                           <div>
-                            <div className="text-xs font-semibold text-white flex items-center gap-2">
-                              <span className={sub.status === 'Accepted' ? 'text-emerald-400' : 'text-rose-400'}>
+                            <div className="text-xs font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+                              <span className={sub.status === 'Accepted' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}>
                                 {sub.status}
                               </span>
                               <span className="text-[11px] text-zinc-500 uppercase font-mono">
                                 • {sub.language}
                               </span>
                             </div>
-                            <div className="text-[11px] text-zinc-400 mt-0.5">
+                            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                               {new Date(sub.timestamp).toLocaleString()} • {sub.runtimeMs}ms
                             </div>
                           </div>
@@ -1054,7 +1054,7 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
                             setSelectedLang(sub.language);
                             setIsConsoleExpanded(true);
                           }}
-                          className="px-3 py-1 text-xs text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer shrink-0"
+                          className="px-3 py-1 text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer shrink-0"
                         >
                           Load Code
                         </button>
@@ -1070,11 +1070,11 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
               <div className="space-y-4 max-w-3xl flex flex-col h-full">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                       <FileText className="w-5 h-5 text-[#ea763f]" />
                       <span>Personal Solution Notes</span>
                     </h2>
-                    <p className="text-xs text-zinc-400">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
                       Save key patterns, edge cases, and complexities for quick revision before interviews.
                     </p>
                   </div>

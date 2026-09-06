@@ -49,7 +49,7 @@
               "code360": "https://www.naukri.com/code360/problems/cpp-basics",
               "article": "https://takeuforward.org/data-structure/what-are-arrays-strings",
               "youtube": "https://youtu.be/EAR7De6Goz4?t=2415",
-              "plus": "/plus/dsa/problems/cpp",
+              "plus": "/plus/dsa/problems/data-types",
               "editorial": "/plus/dsa/problems/cpp",
               "starters": {
                 "python": "# Cpp Basics (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Cpp Basics...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -115,7 +115,7 @@
               "code360": "https://www.naukri.com/code360/problems/what-are-arrays-strings",
               "article": "https://takeuforward.org/data-structure/what-are-arrays-strings",
               "youtube": "https://youtu.be/EAR7De6Goz4?t=2415",
-              "plus": "/plus/dsa/problems/cpp",
+              "plus": "/plus/dsa/problems/sum-of-first-last-element-in-array",
               "editorial": "/plus/dsa/problems/cpp",
               "starters": {
                 "python": "# What are arrays, strings? (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing What are arrays, strings?...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -986,7 +986,7 @@
               "code360": "https://www.naukri.com/code360/problems/understand-recursion-by-print-something-n-times",
               "article": "https://takeuforward.org/recursion/introduction-to-recursion-understand-recursion-by-printing-something-n-times/",
               "youtube": "https://www.youtube.com/watch?v=yVdKa8dnKiE&list=PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
-              "plus": null,
+              "plus": "/plus/dsa/problems/print-1-to-n-using-recursion",
               "editorial": "/plus/dsa/problems/recursion-theory",
               "starters": {
                 "python": "# Understand recursion by print something N times (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Understand recursion by print something N times...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -1008,7 +1008,7 @@
               "code360": "https://www.naukri.com/code360/problems/print-name-n-times-using-recursion",
               "article": "https://takeuforward.org/recursion/print-name-n-times-using-recursion/",
               "youtube": "https://www.youtube.com/watch?v=un6PLygfXrA&list=PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9&index=2",
-              "plus": null,
+              "plus": "/plus/dsa/problems/print-name-n-times-using-recursion",
               "editorial": "/plus/dsa/problems/recursion-theory",
               "starters": {
                 "python": "# Print name N times using recursion (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Print name N times using recursion...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -3339,7 +3339,7 @@
               "code360": "https://www.naukri.com/code360/problems/count-number-of-substrings",
               "article": "https://takeuforward.org/data-structure/count-number-of-substrings",
               "youtube": null,
-              "plus": null,
+              "plus": "/plus/dsa/problems/count-number-of-substrings",
               "editorial": null,
               "starters": {
                 "python": "# Count Number of Substrings (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Count Number of Substrings...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -4350,7 +4350,7 @@
               "code360": "https://www.naukri.com/code360/problems/learn-all-patterns-of-subsequences-theory",
               "article": "https://takeuforward.org/data-structure/learn-all-patterns-of-subsequences-theory",
               "youtube": "https://www.youtube.com/watch?v=eQCS_v3bw0Q&list=PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9&index=7",
-              "plus": null,
+              "plus": "/plus/dsa/problems/subsequences-power-set",
               "editorial": null,
               "starters": {
                 "python": "# Learn All Patterns of Subsequences (Theory) (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Learn All Patterns of Subsequences (Theory)...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -4856,7 +4856,7 @@
               "code360": "https://www.naukri.com/code360/problems/setunset-the-rightmost-unset-bit",
               "article": "https://takeuforward.org/data-structure/set-the-rightmost-bit",
               "youtube": "https://youtu.be/nttpF8kwgd4?si=x9o8PsYaA2XVZ9rV",
-              "plus": null,
+              "plus": "/plus/dsa/problems/set-the-rightmost-unset-bit",
               "editorial": null,
               "starters": {
                 "python": "# Set/Unset the rightmost unset bit (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Set/Unset the rightmost unset bit...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -6292,7 +6292,7 @@
               "code360": "https://www.naukri.com/code360/problems/sort-k-sorted-array",
               "article": "https://takeuforward.org/data-structure/sort-k-sorted-array",
               "youtube": null,
-              "plus": null,
+              "plus": "/plus/dsa/problems/sort-k-sorted-array",
               "editorial": null,
               "starters": {
                 "python": "# Sort K sorted array (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Sort K sorted array...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -7817,7 +7817,7 @@
               "code360": "https://www.naukri.com/code360/problems/find-minmax-in-bst",
               "article": "https://takeuforward.org/data-structure/find-minmax-in-a-bst",
               "youtube": null,
-              "plus": null,
+              "plus": "/plus/dsa/problems/find-minmax-in-bst",
               "editorial": null,
               "starters": {
                 "python": "# Find Min/Max in BST (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Find Min/Max in BST...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -10607,7 +10607,7 @@
               "code360": "https://www.naukri.com/code360/problems/count-square-submatrices-with-all-onesdp-56",
               "article": "https://takeuforward.org/data-structure/count-square-submatrices-with-all-1s-dp-on-rectangles-dp-56/",
               "youtube": "https://youtu.be/auS1fynpnjo",
-              "plus": null,
+              "plus": "/plus/dsa/problems/count-square-submatrices-with-all-ones",
               "editorial": null,
               "starters": {
                 "python": "# Count Square Submatrices with All Ones|(DP-56) (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Count Square Submatrices with All Ones|(DP-56)...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -10739,7 +10739,7 @@
               "code360": "https://www.naukri.com/code360/problems/bit-prerequisites-for-trie-problems",
               "article": null,
               "youtube": "https://youtu.be/5iyuU4hQFrw",
-              "plus": null,
+              "plus": "/plus/dsa/problems/maximum-xor-trie",
               "editorial": null,
               "starters": {
                 "python": "# Bit PreRequisites for TRIE Problems (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Bit PreRequisites for TRIE Problems...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -10864,7 +10864,7 @@
               "code360": "https://www.naukri.com/code360/problems/hashing-in-strings-theory",
               "article": "https://takeuforward.org/data-structure/hashing-in-strings",
               "youtube": null,
-              "plus": null,
+              "plus": "/plus/dsa/problems/polynomial-rolling-hash",
               "editorial": null,
               "starters": {
                 "python": "# Hashing In Strings | Theory (Easy)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Hashing In Strings | Theory...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -10908,7 +10908,7 @@
               "code360": "https://www.naukri.com/code360/problems/z-function",
               "article": null,
               "youtube": null,
-              "plus": null,
+              "plus": "/plus/dsa/problems/z-function",
               "editorial": null,
               "starters": {
                 "python": "# Z function (Hard)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Z function...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
@@ -10952,7 +10952,7 @@
               "code360": "https://www.naukri.com/code360/problems/shortest-palindrome",
               "article": null,
               "youtube": null,
-              "plus": null,
+              "plus": "/plus/dsa/problems/shortest-palindrome",
               "editorial": null,
               "starters": {
                 "python": "# Shortest Palindrome (Hard)\n# Approach & Solution in Python\ndef solution():\n    # Write your solution here\n    pass\n\nif __name__ == \"__main__\":\n    print(\"Testing Shortest Palindrome...\")\n    # Add custom test cases here\n    print(\"Result:\", solution())\n",
