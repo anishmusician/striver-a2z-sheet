@@ -285,7 +285,7 @@ export function App() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[var(--background)] text-white font-firaSans">
+    <div className="flex min-h-screen bg-[var(--background)] text-[var(--foreground)] font-firaSans">
       {/* Hidden File Input for JSON import */}
       <input
         ref={fileInputRef}
@@ -297,7 +297,7 @@ export function App() {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#1f1f20] border border-zinc-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-sm animate-fadeIn">
+        <div className="fixed bottom-6 right-6 z-50 bg-white dark:bg-[#1f1f20] border border-slate-200 dark:border-zinc-700 text-slate-900 dark:text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-sm animate-fadeIn">
           <span>{toastMessage}</span>
         </div>
       )}
@@ -331,15 +331,15 @@ export function App() {
                   {/* User Profile / Learner Account Pill */}
                   <button
                     onClick={() => setShowAuthModal(true)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-xs text-zinc-200 transition-colors cursor-pointer shadow-sm"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-[var(--surface-2)] text-xs text-zinc-700 dark:text-zinc-200 transition-colors cursor-pointer shadow-xs"
                     title="Switch Learner Profile / Learn with Friend"
                   >
-                    <div className={`w-5 h-5 rounded-md bg-gradient-to-tr ${currentProfile.avatarColor} flex items-center justify-center text-[10px] font-bold text-white shadow-sm`}>
+                    <div className={`w-5 h-5 rounded-md bg-gradient-to-tr ${currentProfile.avatarColor} flex items-center justify-center text-[10px] font-bold text-white shadow-xs`}>
                       {currentProfile.name.charAt(0).toUpperCase()}
                     </div>
-                    <span className="font-semibold text-white">{currentProfile.name}</span>
-                    <span className="text-zinc-500 font-mono hidden sm:inline">@{currentProfile.username}</span>
-                    <span className="text-[10px] font-medium text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/20 hidden md:inline">
+                    <span className="font-semibold text-zinc-900 dark:text-white">{currentProfile.name}</span>
+                    <span className="text-zinc-400 dark:text-zinc-500 font-mono hidden sm:inline">@{currentProfile.username}</span>
+                    <span className="text-[10px] font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-200 dark:border-orange-500/20 hidden md:inline">
                       Learn Together
                     </span>
                   </button>
@@ -347,14 +347,14 @@ export function App() {
                   {/* Log Out Button */}
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-rose-500/10 hover:border-rose-500/30 text-xs text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer shadow-sm"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] hover:bg-rose-500/10 hover:border-rose-500/30 text-xs text-zinc-500 dark:text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors cursor-pointer shadow-xs"
                     title="Log Out of Dedicated Session"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Log Out</span>
                   </button>
 
-                  <span className="hidden md:inline-flex shrink-0 items-center rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] px-3 py-1.5 text-xs text-[var(--base-text-muted)] shadow-sm">
+                  <span className="hidden md:inline-flex shrink-0 items-center rounded-lg border border-[var(--surface-border-muted)] bg-[var(--surface-1)] px-3 py-1.5 text-xs text-[var(--base-text-muted)] shadow-xs">
                     Last updated : December 13, 2025
                   </span>
                 </div>

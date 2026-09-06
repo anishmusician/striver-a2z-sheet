@@ -98,27 +98,28 @@ export const StepAccordion: React.FC<StepAccordionProps> = ({
 
             {/* Step Expanded Content: Subcategories */}
             {isStepOpen && (
-              <div className="tuf-accordion-body py-2 px-2 md:px-4 border-t border-[var(--border)] bg-[#0f0f10]">
+              <div className="tuf-accordion-body py-2 px-2 md:px-4 border-t border-[var(--border)] bg-[var(--accordion-body-bg)]">
                 <div className="space-y-2 py-1">
                   {step.subcategories.map(sub => {
                     const isSubOpen = !!expandedSubsteps[sub.id];
                     const subSolved = sub.problems.filter(p => getStatus(p.id) === 'solved').length;
                     const subTotal = sub.problems.length;
                     const subPct = subTotal > 0 ? Math.round((subSolved / subTotal) * 100) : 0;
+                    const isAllSolved = subSolved === subTotal && subTotal > 0;
 
                     return (
                       <div key={sub.id} className="tuf-subrow">
                         {/* Sub-step Trigger */}
                         <div className="tuf-subrow-row">
                           <div className="tuf-subrow-gutter">
-                            <span className={`tuf-subrow-dot ${subSolved === subTotal && subTotal > 0 ? 'bg-[var(--brand)]' : ''}`} />
+                            <span className={`tuf-subrow-dot ${isAllSolved ? 'bg-emerald-500 shadow-xs shadow-emerald-500/50' : ''}`} />
                           </div>
 
                           <button
                             type="button"
                             data-state={isSubOpen ? "open" : "closed"}
                             onClick={() => toggleSubstep(sub.id)}
-                            className="tuf-subrow-btn px-2 rounded-lg hover:bg-zinc-800/40 select-none"
+                            className="tuf-subrow-btn px-2 rounded-lg hover:bg-orange-500/5 dark:hover:bg-zinc-800/40 select-none transition-colors"
                           >
                             <div className="flex items-center gap-2 min-w-0 flex-1">
                               <ChevronRight className="tuf-accordion-icon w-4 h-4 text-zinc-400" />

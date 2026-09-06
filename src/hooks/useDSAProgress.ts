@@ -323,7 +323,7 @@ export const useDSAProgress = () => {
   // Friend Sharing & Sync
   const getShareCode = useCallback((): string => {
     const solvedIds = Object.entries(progress.problems)
-      .filter(([_, data]) => data.status === 'solved')
+      .filter(([, data]) => data.status === 'solved')
       .map(([id]) => id);
 
     const shareData = {

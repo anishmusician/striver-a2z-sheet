@@ -23,12 +23,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onLogout,
 }) => {
   return (
-    <aside className="hidden lg:flex flex-col justify-between w-[74px] h-screen sticky top-0 bg-[#0e0e0f] border-r border-[var(--border)] py-3 px-2 z-30 shrink-0 select-none">
+    <aside className="hidden lg:flex flex-col justify-between w-[74px] h-screen sticky top-0 bg-[var(--sidebar-dark)] border-r border-[var(--border)] py-3 px-2 z-30 shrink-0 select-none shadow-xs">
       {/* Top section: Logo & Nav items */}
       <div className="flex flex-col items-center w-full">
         {/* takeUforward Official Logo */}
         <div className="mb-3 p-1">
-          <a href="#" className="flex items-center justify-center">
+          <a href="#" className="flex items-center justify-center hover:scale-105 transition-transform">
             <svg width="34" height="34" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path 
                 fillRule="evenodd" 
@@ -41,31 +41,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Separator */}
-        <div className="w-8 h-[1px] bg-zinc-800 my-2"></div>
+        <div className="w-8 h-[1px] bg-[var(--border)] my-2"></div>
 
         {/* Nav list */}
         <nav className="flex flex-col items-center gap-2 w-full mt-1">
           {/* Home */}
           <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-colors group cursor-pointer"
+            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-zinc-400 hover:text-orange-600 dark:hover:text-white hover:bg-orange-500/10 dark:hover:bg-zinc-800/60 transition-colors group cursor-pointer"
             title="Home"
           >
             <House className="w-5 h-5 mb-0.5" />
-            <span className="text-[10px] font-medium leading-none text-zinc-400 group-hover:text-white">Home</span>
+            <span className="text-[10px] font-medium leading-none text-zinc-500 dark:text-zinc-400 group-hover:text-orange-600 dark:group-hover:text-white">Home</span>
           </button>
 
           {/* Plus */}
           <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-zinc-400 hover:text-[var(--brand)] hover:bg-zinc-800/60 transition-colors group cursor-pointer"
+            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-zinc-400 hover:text-[var(--brand)] hover:bg-orange-500/10 dark:hover:bg-zinc-800/60 transition-colors group cursor-pointer"
             title="Plus (Unlocked)"
           >
             <span className="font-bold text-sm leading-none text-[var(--brand)] mb-0.5">+</span>
-            <span className="text-[10px] font-medium leading-none text-zinc-400 group-hover:text-[var(--brand)]">Plus</span>
+            <span className="text-[10px] font-medium leading-none text-zinc-500 dark:text-zinc-400 group-hover:text-[var(--brand)]">Plus</span>
           </button>
 
           {/* Track (Active) */}
           <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-[var(--brand)] bg-[var(--brand-bg-10)] border border-[var(--brand-bg-30)] shadow-sm transition-colors cursor-pointer"
+            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-[var(--brand)] bg-[var(--brand-bg-10)] border border-[var(--brand-bg-30)] shadow-xs transition-colors cursor-pointer"
             title="Track / Sheets"
           >
             <FileText className="w-5 h-5 mb-0.5 stroke-[2.2]" />
@@ -74,11 +74,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Practice */}
           <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-colors group cursor-pointer"
+            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-zinc-400 hover:text-orange-600 dark:hover:text-white hover:bg-orange-500/10 dark:hover:bg-zinc-800/60 transition-colors group cursor-pointer"
             title="Practice & Code Sandbox"
           >
             <Code2 className="w-5 h-5 mb-0.5" />
-            <span className="text-[10px] font-medium leading-none text-zinc-400 group-hover:text-white">Code</span>
+            <span className="text-[10px] font-medium leading-none text-zinc-500 dark:text-zinc-400 group-hover:text-orange-600 dark:group-hover:text-white">Code</span>
           </button>
         </nav>
       </div>
@@ -87,17 +87,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex flex-col items-center gap-3 w-full pb-2">
         {/* Streak */}
         <div 
-          className="flex flex-col items-center justify-center w-11 py-1 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400"
+          className="flex flex-col items-center justify-center w-11 py-1 rounded-xl bg-orange-500/10 border border-orange-500/25 text-orange-500 dark:text-orange-400 shadow-xs"
           title={`${streak} Days Streak`}
         >
-          <Flame className="w-4 h-4 fill-orange-400" />
+          <Flame className="w-4 h-4 fill-orange-500 dark:fill-orange-400" />
           <span className="text-[10px] font-bold font-mono mt-0.5">{streak}d</span>
         </div>
 
         {/* Export */}
         <button
           onClick={onExport}
-          className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="p-2 rounded-xl text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           title="Export Progress Backup (JSON)"
         >
           <Download className="w-4 h-4" />
@@ -106,7 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Import */}
         <button
           onClick={onImportClick}
-          className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="p-2 rounded-xl text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           title="Import Progress (JSON)"
         >
           <Upload className="w-4 h-4" />
@@ -115,7 +115,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Reset */}
         <button
           onClick={onReset}
-          className="p-2 rounded-xl text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+          className="p-2 rounded-xl text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
           title="Reset Progress"
         >
           <RotateCcw className="w-4 h-4" />
@@ -139,7 +139,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {onLogout && (
           <button
             onClick={onLogout}
-            className="p-1.5 rounded-xl text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer mt-0.5"
+            className="p-1.5 rounded-xl text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer mt-0.5"
             title="Log Out of Dedicated Session"
           >
             <LogOut className="w-3.5 h-3.5" />
