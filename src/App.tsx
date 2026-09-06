@@ -11,6 +11,7 @@ import { VideoModal } from './components/VideoModal';
 import { AuthModal } from './components/AuthModal';
 import { LoginPage } from './components/LoginPage';
 import { authService, type AuthUser } from './services/authService';
+import { ThemeToggle } from './components/ThemeToggle';
 import { LogOut } from 'lucide-react';
 
 const sheetData = sheetDataRaw as SheetData;
@@ -323,7 +324,10 @@ export function App() {
                 <h1 className="text-lg md:text-2xl font-bold font-firaSans leading-tight text-[var(--base-text-primary)]">
                   Striver&apos;s A2Z Sheet - Learn DSA from A to Z
                 </h1>
-                <div className="flex items-center gap-2 justify-end w-fit">
+                <div className="flex items-center gap-2 sm:gap-2.5 justify-end w-fit">
+                  {/* Theme Switcher Toggle */}
+                  <ThemeToggle variant="switch" />
+
                   {/* User Profile / Learner Account Pill */}
                   <button
                     onClick={() => setShowAuthModal(true)}

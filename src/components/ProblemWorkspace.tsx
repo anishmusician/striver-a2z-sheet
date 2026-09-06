@@ -8,6 +8,7 @@ import {
 import type { Problem, Language, ProblemStatus, SubmissionRecord } from '../types/dsa';
 import { getProblemDetail } from '../data/problemsData';
 import { validateJavaCode } from '../services/javaValidator';
+import { ThemeToggle } from './ThemeToggle';
 
 interface ProblemWorkspaceProps {
   problem: Problem;
@@ -583,6 +584,9 @@ export const ProblemWorkspace: React.FC<ProblemWorkspaceProps> = ({
             <Sparkles className="w-3 h-3" />
             <span>0 Credits Free</span>
           </span>
+
+          {/* Theme Switcher Toggle */}
+          <ThemeToggle variant="switch" />
 
           {/* Fullscreen Button */}
           <button

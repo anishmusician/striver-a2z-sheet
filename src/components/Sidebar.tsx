@@ -1,6 +1,7 @@
 import React from 'react';
 import { House, FileText, Code2, Download, Upload, RotateCcw, Flame, LogOut } from 'lucide-react';
 import type { UserProfile } from '../types/dsa';
+import { ThemeToggle } from './ThemeToggle';
 
 interface SidebarProps {
   streak: number;
@@ -119,6 +120,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <RotateCcw className="w-4 h-4" />
         </button>
+
+        {/* Theme Toggle Button */}
+        <div className="my-0.5">
+          <ThemeToggle variant="icon" />
+        </div>
 
         {/* User profile avatar button */}
         <button

@@ -4,6 +4,7 @@ import {
   ShieldCheck, Sparkles, AlertCircle 
 } from 'lucide-react';
 import { authService, type AuthUser } from '../services/authService';
+import { ThemeToggle } from './ThemeToggle';
 
 interface LoginPageProps {
   onLoginSuccess: (user: AuthUser) => void;
@@ -129,6 +130,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
   return (
     <div className="min-h-screen w-full bg-[#09090b] flex flex-col items-center justify-center p-4 relative overflow-hidden font-firaSans text-zinc-100 selection:bg-[#ea763f]/30">
+      {/* Top Right Theme Toggle */}
+      <div className="absolute top-4 right-4 z-30">
+        <ThemeToggle variant="switch" />
+      </div>
+
       {/* Background Decorative Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-orange-600/10 via-amber-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
