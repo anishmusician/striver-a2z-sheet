@@ -1,5 +1,5 @@
 import React from 'react';
-import { House, FileText, Flame, LogOut } from 'lucide-react';
+import { Flame, LogOut } from 'lucide-react';
 import type { UserProfile } from '../types/dsa';
 
 interface SidebarProps {
@@ -19,13 +19,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onLogout,
 }) => {
   return (
-    <aside className="hidden lg:flex flex-col justify-between w-[74px] h-screen sticky top-0 bg-white border-r border-slate-200/80 py-3 px-2 z-30 shrink-0 select-none shadow-xs">
+    <aside className="hidden lg:flex flex-col justify-between w-[78px] h-screen sticky top-0 bg-white border-r border-slate-200/80 py-3 px-2 z-30 shrink-0 select-none shadow-xs">
       {/* Top section: Logo & Nav items */}
       <div className="flex flex-col items-center w-full">
         {/* takeUforward Official Logo */}
-        <div className="mb-3 p-1">
-          <a href="#" className="flex items-center justify-center hover:scale-105 transition-transform">
-            <svg width="34" height="34" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div className="mb-2">
+          <a 
+            href="#" 
+            className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-50 via-white to-amber-50/70 border border-orange-200/70 shadow-xs hover:shadow-md hover:shadow-orange-200/50 hover:scale-105 active:scale-95 transition-all duration-200 group"
+            title="takeUforward"
+          >
+            <svg width="28" height="28" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-transform duration-300 group-hover:rotate-6">
               <path 
                 fillRule="evenodd" 
                 clipRule="evenodd" 
@@ -37,57 +41,54 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Separator */}
-        <div className="w-8 h-[1px] bg-slate-200 my-2"></div>
+        <div className="w-8 h-[1px] bg-slate-200 my-2 rounded-full"></div>
 
-        {/* Nav list */}
-        <nav className="flex flex-col items-center gap-2 w-full mt-1">
-          {/* Home */}
+        {/* Nav list: ONLY "Sheet" as requested */}
+        <nav className="flex flex-col items-center w-full mt-1">
           <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-slate-500 hover:text-orange-600 hover:bg-orange-50 transition-colors group cursor-pointer"
-            title="Home"
+            className="w-[58px] h-[64px] rounded-2xl flex flex-col items-center justify-center bg-[#fff8f3] border-2 border-[#fed7aa] shadow-sm hover:shadow-md hover:shadow-orange-200/50 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer group"
+            title="Striver's A2Z Sheet (Active)"
           >
-            <House className="w-5 h-5 mb-0.5" />
-            <span className="text-[10px] font-medium leading-none text-slate-500 group-hover:text-orange-600">Home</span>
-          </button>
-
-          {/* Plus */}
-          <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-slate-500 hover:text-orange-600 hover:bg-orange-50 transition-colors group cursor-pointer"
-            title="Plus (Unlocked)"
-          >
-            <span className="font-bold text-sm leading-none text-orange-600 mb-0.5">+</span>
-            <span className="text-[10px] font-medium leading-none text-slate-500 group-hover:text-orange-600">Plus</span>
-          </button>
-
-          {/* Sheet (Active) */}
-          <button 
-            className="w-12 h-12 rounded-xl flex flex-col items-center justify-center text-orange-600 bg-orange-50 border border-orange-200/90 shadow-xs transition-colors cursor-pointer"
-            title="Striver's A2Z Sheet"
-          >
-            <FileText className="w-5 h-5 mb-0.5 stroke-[2.2]" />
-            <span className="text-[10px] font-bold leading-none">Sheet</span>
+            {/* Exact TUF Sheet Document Icon with folded corner and lines */}
+            <svg 
+              width="26" 
+              height="26" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="#EA580C" 
+              strokeWidth="2.2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className="mb-1 transition-transform duration-200 group-hover:-translate-y-0.5"
+            >
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="8" y1="13" x2="16" y2="13" />
+              <line x1="8" y1="17" x2="16" y2="17" />
+            </svg>
+            <span className="text-[12px] font-extrabold text-[#EA580C] leading-none tracking-tight">Sheet</span>
           </button>
         </nav>
       </div>
 
       {/* Bottom section: Streak, Profile, Logout */}
       <div className="flex flex-col items-center gap-2.5 w-full pb-3">
-        {/* Streak */}
+        {/* Animated Streak */}
         <div 
-          className="flex flex-col items-center justify-center w-11 py-1 rounded-xl bg-orange-50 border border-orange-200/90 text-orange-600 shadow-xs"
+          className="flex flex-col items-center justify-center w-12 py-1.5 rounded-2xl bg-gradient-to-b from-amber-50 to-orange-50 border border-orange-200/90 text-orange-600 shadow-xs hover:scale-105 transition-transform duration-200 cursor-default"
           title={`${streak} Days Streak`}
         >
-          <Flame className="w-4 h-4 fill-orange-500" />
-          <span className="text-[10px] font-bold font-mono mt-0.5">{streak}d</span>
+          <Flame className="w-4 h-4 fill-orange-500 text-orange-500 animate-pulse" />
+          <span className="text-[10px] font-extrabold font-mono mt-0.5 tracking-tight text-orange-600">{streak}d</span>
         </div>
 
         {/* User profile avatar button */}
         <button
           onClick={onOpenAuth}
-          className="w-9 h-9 rounded-full border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-600 hover:border-orange-500 hover:bg-orange-50 transition-all cursor-pointer shadow-xs group"
+          className="w-10 h-10 rounded-2xl border border-slate-200 bg-white hover:border-orange-400 hover:shadow-md hover:shadow-orange-200/40 hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center text-slate-600 cursor-pointer shadow-xs group"
           title={`${currentProfile?.name || 'User'} (@${currentProfile?.username || 'user'}) - Click to switch profile / learn with friend`}
         >
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-400 to-amber-500 flex items-center justify-center text-[10px] font-bold text-white shadow-xs">
+          <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-xs font-bold text-white shadow-xs">
             {currentProfile?.name?.charAt(0).toUpperCase() || 'A'}
           </div>
         </button>
@@ -96,10 +97,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {onLogout && (
           <button
             onClick={onLogout}
-            className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95"
             title="Log Out of Dedicated Session"
           >
-            <LogOut className="w-3.5 h-3.5" />
+            <LogOut className="w-4 h-4" />
           </button>
         )}
       </div>

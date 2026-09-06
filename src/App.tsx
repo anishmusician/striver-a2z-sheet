@@ -12,7 +12,7 @@ import { AuthModal } from './components/AuthModal';
 import { LoginPage } from './components/LoginPage';
 import { authService, type AuthUser } from './services/authService';
 import { RightSidebar } from './components/RightSidebar';
-import { LogOut, RotateCcw, Upload, Cloud, CloudOff, RefreshCw } from 'lucide-react';
+import { LogOut, RotateCcw, Upload, Cloud, CloudOff, RefreshCw, Flame, Sparkles } from 'lucide-react';
 
 const sheetData = sheetDataRaw as SheetData;
 
@@ -323,10 +323,22 @@ export function App() {
             {/* Exact takeUforward Hero Section */}
             <div className="px-1 md:px-0 mb-4">
               <div className="w-full flex flex-col justify-start items-start gap-2">
-                <div className="w-full flex items-center justify-between gap-3 pt-0">
-                  <h1 className="text-lg md:text-2xl font-bold font-firaSans leading-tight text-slate-900">
-                    Striver&apos;s A2Z Sheet - Learn DSA from A to Z
-                  </h1>
+                <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-0">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-orange-100/70 text-orange-700 border border-orange-200/80 shadow-xs">
+                        <Flame className="w-3.5 h-3.5 fill-orange-500 text-orange-500 animate-pulse" />
+                        Striver&apos;s Official A2Z Sheet
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs">
+                        <Sparkles className="w-3 h-3 text-emerald-600" />
+                        100% Free &amp; Unlocked
+                      </span>
+                    </div>
+                    <h1 className="text-xl md:text-2xl font-extrabold font-firaSans leading-tight text-slate-900 tracking-tight">
+                      Learn DSA from A to Z
+                    </h1>
+                  </div>
                   <div className="flex items-center gap-2 sm:gap-2.5 justify-end w-fit">
                     {/* Reset Progress Button */}
                     <button
